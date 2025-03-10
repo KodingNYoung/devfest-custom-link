@@ -1,17 +1,11 @@
 import type {Metadata} from "next";
-import {Geist, Geist_Mono} from "next/font/google";
-import "./globals.css";
+import "../styles/globals.css";
 import React from "react";
+import {cls} from "@/utils/helpers";
+import {plusJakartaSans} from "@/assets/font";
+import AppLayout from "@/components/templates/app-layout";
+import {LayoutFC} from "@/utils/types";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
     title: {
@@ -21,18 +15,16 @@ export const metadata: Metadata = {
     description: "Supercharge your customer support with our AI powered agents",
 };
 
-export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
-    children: React.ReactNode;
-}>) {
+const RootLayout: LayoutFC = ({children}) => {
     return (
-        <html lang="en">
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-        {children}
+        <html lang="en" className={cls("h-full max-h-[780px]", plusJakartaSans.variable)}>
+        <body>
+        <AppLayout>
+            {children}
+        </AppLayout>
         </body>
         </html>
     );
 }
+
+export default RootLayout;

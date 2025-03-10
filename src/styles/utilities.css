@@ -1,0 +1,19 @@
+@utility bg-brand-gradient {
+    @apply bg-gradient-to-r from-gold-500 to-red-500;
+}
+
+@utility text-semibold-xl {
+    @apply font-semibold text-xl;
+}
+@utility text-medium-base {
+    @apply font-medium text-base;
+}
+@utility text-medium-sm {
+    @apply font-medium text-sm;
+}
+@utility text-regular-xs {
+    @apply font-normal text-xs;
+}
+@utility text-regular-sm {
+    @apply font-normal text-sm;
+}

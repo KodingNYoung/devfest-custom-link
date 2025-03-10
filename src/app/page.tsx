@@ -1,7 +1,11 @@
-export default function Home() {
+import {PageFC} from "@/utils/types";
+import Conversations from "@/components/views/conversations";
+
+const Home: PageFC = () => {
     return (
-        <h1 className="text-6xl text-red-500">
-            Chatbot
-        </h1>
+        <Conversations/>
     );
 }
+
+
+export default Home

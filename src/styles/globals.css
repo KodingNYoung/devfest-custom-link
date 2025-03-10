@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@import "./utilities.css";
+@import "./theme.css";
+
+@import "../assets/icomoon/style.css";
+
+
+@layer base {
+    body {
+        @apply font-app antialiased  h-full;
+    }
+}
+
