@@ -5,7 +5,7 @@ import React from "react";
 
 const ChatFooter: FC = () => {
   return (
-    <footer className="sticky mt-auto left-0 bottom-[65px] flex items-end gap-3 w-full bg-white pb-5">
+    <footer className="sticky mt-auto left-0 bottom-[65px] flex items-end gap-3 w-full bg-white pb-5 z-[1]">
       <div className="h-14 flex items-end">
         <button type="button">
           <Icon name="icon-attach-circle" size={24} />

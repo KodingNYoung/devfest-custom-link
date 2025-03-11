@@ -19,7 +19,6 @@ const Conversations: FC = () => {
             />
           );
         })}
-        <div className="absolute top-0 left-0 bottom-[65px] w-full shadow-[inset_0px_-76px_33px_-39px_rgba(255,255,255,1)] pointer-events-none" />
       </section>
     </div>
   );

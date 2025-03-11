@@ -6,6 +6,7 @@ const Footer = () => {
       <span>Powered by </span>
       <Icon name="icon-eusate" size={20} />
       <span>Eusate</span>
+      <div className="absolute bottom-0 left-0 w-full shadow-[0px_-10px_20px_10px_rgba(255,255,255,1)]  h-full pointer-events-none -z-1" />
     </footer>
   );
 };
