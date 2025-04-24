@@ -28,7 +28,7 @@ export const SessionContextProviders: FC<{
       const uuid = uuidV4();
       set(uuid);
     }
-  }, [defaultUserId, storageUserId]);
+  }, [defaultUserId, storageUserId, set]);
 
   return (
     <SessionContext.Provider

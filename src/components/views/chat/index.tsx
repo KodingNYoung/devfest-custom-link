@@ -11,7 +11,7 @@ const Chat: FC = () => {
   useEffect(() => {
     console.log("Chat component mounted, should emit chat read here");
     readChat();
-  }, [messages]);
+  }, [messages, readChat]);
 
 
   return (

@@ -80,7 +80,7 @@ export const ChatContextProvider: FC = ({ children }) => {
 
   const ticketChatId = useMemo(
     () => (chatId === NEW_CHAT_ID ? null : chatId),
-    [chatId, NEW_CHAT_ID]
+    [chatId]
   );
 
   const { data, isLoading } = useTicketChats(ticketChatId) || {};
@@ -102,10 +102,27 @@ export const ChatContextProvider: FC = ({ children }) => {
   });
 
   //   functions
-  const updateMessages = (messageObj: Omit<MessageType, "id">) => {
-    setMessages((prev) => [...prev, { ...messageObj, id: uuidV4() }]);
-    scrollToBottom();
-  };
+  const scrollToBottom = useCallback(
+    (behavior: ScrollBehavior = "smooth", delay: number = 100) => {
+      // scroll to bottom of chat
+      setTimeout(() => {
+        if (chatScrollRef.current) {
+          chatScrollRef.current.scrollTo({
+            top: chatScrollRef.current.scrollHeight,
+            behavior,
+          });
+        }
+      }, delay);
+    },
+    []
+  );
+  const updateMessages = useCallback(
+    (messageObj: Omit<MessageType, "id">) => {
+      setMessages((prev) => [...prev, { ...messageObj, id: uuidV4() }]);
+      scrollToBottom();
+    },
+    [scrollToBottom]
+  );
   const sendMessage = useCallback(
     (message: string) => {
       // emit message
@@ -122,7 +139,7 @@ export const ChatContextProvider: FC = ({ children }) => {
         });
       }
     },
-    [emitMessage, messages, chatId]
+    [emitMessage, chatId, updateMessages]
   );
   const readChat = useCallback(() => {
     if (!ticketChatId) return;
@@ -131,21 +148,7 @@ export const ChatContextProvider: FC = ({ children }) => {
     queryClient.invalidateQueries({
       queryKey: [...QUERY_FN_KEYS.CONVERSATIONS, userId],
     });
-  }, [ticketChatId, emitRead, queryClient]);
-  const scrollToBottom = useCallback(
-    (behavior: ScrollBehavior = "smooth", delay: number = 100) => {
-      // scroll to bottom of chat
-      setTimeout(() => {
-        if (chatScrollRef.current) {
-          chatScrollRef.current.scrollTo({
-            top: chatScrollRef.current.scrollHeight,
-            behavior,
-          });
-        }
-      }, delay);
-    },
-    [chatScrollRef.current]
-  );
+  }, [ticketChatId, emitRead, queryClient, userId]);
 
   useEffect(() => {
     setMessages(data?.messages || []);

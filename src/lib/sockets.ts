@@ -30,20 +30,17 @@ export const useChatSocket = (
 
       return payload;
     },
-    [socket.current, chatId, isAuthUser, userId]
+    [chatId, isAuthUser, userId]
   );
 
-  const emitRead = useCallback(
-    (chatId: ChatId | null) => {
-      if (!socket.current || !chatId) return;
-      const payload = {
-        ticket_chat_id: chatId,
-        entity: MessageSenders.CUSTOMER,
-      };
-      socket.current.emit("mark_conversation_read", payload);
-    },
-    [socket.current]
-  );
+  const emitRead = useCallback((chatId: ChatId | null) => {
+    if (!socket.current || !chatId) return;
+    const payload = {
+      ticket_chat_id: chatId,
+      entity: MessageSenders.CUSTOMER,
+    };
+    socket.current.emit("mark_conversation_read", payload);
+  }, []);
 
   useEffect(() => {
     if (!API_BASEURL || socket.current) return;
@@ -59,7 +56,7 @@ export const useChatSocket = (
 
     _socket.on("disconnect", () => console.log("Disconnected"));
     _socket.on("support", (data: SocketResponseType) => {
-      onmessage && onmessage(data);
+      if (onmessage) onmessage(data);
     });
     socket.current = _socket;
 
@@ -67,7 +64,7 @@ export const useChatSocket = (
       // emit close event to server
       //   socket.current?.close();
     };
-  }, [chatId, onmessage]);
+  }, [onmessage, apiKey]);
 
   return { emitMessage, emitRead };
 };
