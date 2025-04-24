@@ -1,15 +1,24 @@
 import { FC } from "@/utils/types";
 import ChatFooter from "./_components/ChatFooter";
 import ChatWall from "./_components/ChatWall";
+import { useEffect } from "react";
+import { useChat } from "@/hooks/chat";
 
-type Props = {
-  chatId: string;
-};
+const Chat: FC = () => {
+  const { messages, readChat, scrollRef, scrollToBottom } = useChat();
+  scrollToBottom("instant", 0);
 
-const Chat: FC<Props> = ({}) => {
-  // TODO: initiate ws here with hook.
+  useEffect(() => {
+    console.log("Chat component mounted, should emit chat read here");
+    readChat();
+  }, [messages]);
+
+
   return (
-    <div className="px-8 pt-5 flex flex-col flex-1">
+    <div
+      ref={scrollRef}
+      className="pt-4 flex flex-col flex-1 h-full overflow-auto relative"
+    >
       <ChatWall />
       <ChatFooter />
     </div>

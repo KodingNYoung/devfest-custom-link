@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { FC } from "@/utils/types";
 import Header from "./Header";
@@ -7,7 +9,7 @@ const AppLayout: FC = ({ children }) => {
   return (
     <div className="flex flex-col h-full bg-black">
       <Header />
-      <div className="flex-1 bg-white rounded-t-[20px] flex flex-col h-[calc(100%_-_88px)] overflow-y-auto relative">
+      <div className="flex-1 bg-white rounded-t-[20px] flex flex-col h-[calc(100%_-_88px)] whitespace-break-spaces relative">
         {children}
         <Footer />
       </div>

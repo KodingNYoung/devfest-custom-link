@@ -12,14 +12,14 @@ const CloseBtn = () => {
       transition={{ bounce: 0 }}
     >
       <button
-        className="text-white size-10 min-w-10 min-h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 cursor-pointer transition-all duration-300 active:scale-80"
+        className="text-white size-8 min-w-8 min-h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 cursor-pointer transition-all duration-300 active:scale-80"
         onClick={() => {
           if (typeof window !== "undefined" && window.parent) {
             window.parent.postMessage({ action: "closeChat" }, "*");
           }
         }}
       >
-        <Icon name="icon-close" size={24} />
+        <Icon name="icon-close" size={18} />
       </button>
     </motion.div>
   );

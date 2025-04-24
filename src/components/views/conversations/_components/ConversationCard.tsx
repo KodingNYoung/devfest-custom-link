@@ -1,61 +1,71 @@
-import { FC, MessageSenders } from "@/utils/types";
-import { ROUTES } from "@/utils/constants";
-import Link from "next/link";
+"use client";
+
+import { ConversationType, FC } from "@/utils/types";
 import Icon from "@/components/atoms/Icon";
 import { cls } from "@/utils/helpers";
+import { MessageSenders } from "@/utils/enums";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
+import { useChatNav } from "@/hooks/chat";
+
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
 
 type Props = {
-  id: string | number;
-  lastMessageSender: MessageSenders;
-  newMessageCount?: number;
+  conversation: ConversationType;
 };
 
-const ConversationCard: FC<Props> = ({
-  id,
-  lastMessageSender,
-  newMessageCount,
-}) => {
+const ConversationCard: FC<Props> = ({ conversation }) => {
+  const { goToChat } = useChatNav();
+
   return (
-    <Link
-      href={`${ROUTES.CHAT}/${id}`}
-      className="border border-gray-50 w-full p-3 rounded-xl flex items-start gap-3"
-      prefetch
+    <button
+      onClick={() => {
+        goToChat(conversation.id);
+      }}
+      className="border border-gray-50 w-full p-2.5 rounded-xl flex items-start gap-2 cursor-pointer"
     >
-      <div className="size-8 min-h-8 min-w-8 flex justify-center items-center rounded-full bg-black text-white">
-        <Icon name="icon-eusate" size={12} />
+      <div className="size-6 min-h-6 min-w-6 flex justify-center items-center rounded-full bg-black text-white">
+        <Icon name="icon-eusate" size={9} />
       </div>
-      <div className="flex flex-col gap-1 flex-1">
+      <div className="flex flex-col gap-1 flex-1 w-[calc(100%_-_44px)]">
         <div className="flex items-center justify-between">
-          <h4 className="text-medium-sm text-gray-500">
-            Conversation ID/Issue title
+          <h4 className="font-medium text-[11px] text-gray-500">
+            {conversation.ticket_slug}
           </h4>
-          <span className="text-gray-300 text-regular-xs">12/12/2024</span>
+          <span className="text-gray-300 font-regular text-[10px]">
+            {dayjs(conversation.latest_message.date_created).fromNow()}
+          </span>
         </div>
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 w-full">
           <span
             className={cls(
-              newMessageCount
-                ? "text-medium-sm text-gray-900"
-                : "text-regular-sm text-gray-400"
+              "truncate w-full text-left",
+              !conversation.read_by_customer
+                ? "text-medium-xs text-gray-900"
+                : "text-regular-xs text-gray-400"
             )}
           >
-            {lastMessageSender === "user"
+            {conversation.latest_message.sender === MessageSenders.CUSTOMER
               ? "You: "
-              : lastMessageSender === "sate"
+              : conversation.latest_message.sender === MessageSenders.SATE
               ? "Sate: "
               : "Agent: "}{" "}
-            Hi, I&#39;m Z Bot, your digital assistant.
+            {conversation.latest_message.message}
           </span>
           <span className="flex-1" />
-          {newMessageCount && (
-            <span className="size-6 min-w-6 min-h-6 bg-brand-gradient text-white rounded-full flex items-center justify-center text-medium-sm">
-              {newMessageCount}
-            </span>
+          {!conversation.read_by_customer && (
+            <span className="size-3 min-w-3 min-h-3 bg-brand-gradient text-white rounded-full flex items-center justify-center text-medium-xs" />
           )}
-          <Icon name="icon-chevron-down" size={24} className="-rotate-90 !text-gray-400" />
+          <Icon
+            name="icon-chevron-down"
+            size={18}
+            className="-rotate-90 !text-gray-400"
+          />
         </div>
       </div>
-    </Link>
+    </button>
   );
 };
 

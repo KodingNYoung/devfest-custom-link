@@ -1,9 +1,12 @@
-import React, { HTMLProps } from "react";
+import React from "react";
 import { FC, TWClassNames } from "@/utils/types";
 import { cls } from "@/utils/helpers";
+import TextareaAutosize, {
+  TextareaAutosizeProps,
+} from "react-textarea-autosize";
 
 type Slots = "root" | "inputContainer" | "input";
-export type InputProps = Omit<HTMLProps<HTMLTextAreaElement>, "size"> & {
+export type InputProps = TextareaAutosizeProps & {
   name: string;
   classNames?: { [slot in Slots]?: TWClassNames };
 };
@@ -21,19 +24,20 @@ const Textarea: FC<InputProps> = ({
         <div
           className={cls(
             "flex items-center relative rounded-[20px] border border-[#E4E7EC]",
-            "",
             classNames?.inputContainer
           )}
         >
-          <textarea
+          <TextareaAutosize
+            minRows={1}
+            maxRows={4}
             className={cls(
-              "p-4  transition-colors duration-200 outline-0 w-full relative regular-sm font-app text-gray-900 bg-white-100",
-              "placeholder:text-regular-sm placeholder:text-gray-400 rounded-[inherit] resize-none",
+              "p-3 transition-colors duration-200 outline-0 w-full relative text-regular-xs font-app text-gray-900 bg-white-100",
+              "placeholder:text-regular-xs placeholder:text-gray-400 rounded-[inherit] resize-none",
               className,
               classNames?.input
             )}
             name={name}
-            id={id}
+            id={id || name}
             {...props}
           />
         </div>
