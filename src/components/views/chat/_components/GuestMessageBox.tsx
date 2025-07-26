@@ -28,7 +28,7 @@ const GuestMessageBox: FC<Props> = ({ typing, message }) => {
             <span
               className="text-medium-xs [&_ol]:list-decimal [&_ol]:list-inside [&_ul]:list-inside text-gray-900"
               dangerouslySetInnerHTML={{
-                __html: message.message.trim(),
+                __html: message?.message?.trim(),
               }}
             />
             <span className="text-gray-400 text-regular-xxs">
