@@ -9,6 +9,7 @@ export const useConversations = () => {
   const result = useQuery({
     queryKey: [...QUERY_FN_KEYS.CONVERSATIONS, userId],
     queryFn: async () => await getUserConversations(apiKey, userId),
+    enabled: Boolean(userId && apiKey),
   });
 
   return result;

@@ -1,15 +1,19 @@
+"use client";
+
 import { PageFC } from "@/utils/types";
-import ChatApp from "@/components/views";
+import React from "react";
+import dynamic from "next/dynamic";
 
-const Home: PageFC = async ({ searchParams }) => {
-  const params = await searchParams;
-  const apiKey = params?.apiKey as string;
-  const userId = params?.userId as string | undefined;
+const SessionProvider = dynamic(() => import("@/providers/sessionProvider"), {
+  ssr: false,
+});
+const Chat = dynamic(() => import("@/components/views"));
 
-  return apiKey ? (
-    <ChatApp userId={userId} apiKey={apiKey} />
-  ) : (
-    <div> No API key provider</div>
+const Home: PageFC = () => {
+  return (
+    <SessionProvider>
+      <Chat />
+    </SessionProvider>
   );
 };
 

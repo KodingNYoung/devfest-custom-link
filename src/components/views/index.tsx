@@ -1,27 +1,34 @@
-"use client";
-
 import { FC } from "@/utils/types";
 import React from "react";
-import dynamic from "next/dynamic";
+import AppLayout from "../templates/app-layout";
+import Chat from "./chat";
+import Conversations from "./conversations";
+import { useConversations } from "@/hooks/apiHooks";
+import { useChatNav } from "@/hooks/chat";
+import { ChatContextProvider } from "@/providers/chatProvider";
 
-const SessionProvider = dynamic(() => import("@/providers/sessionProvider"), {
-  ssr: false,
-});
-const Container = dynamic(() => import("./Container"), {
-  ssr: false,
-});
+const Container: FC = () => {
+  const { chatId } = useChatNav();
+  const { data, isLoading } = useConversations();
 
-type Props = {
-  userId?: string;
-  apiKey: string;
-};
-
-const ChatApp: FC<Props> = ({ apiKey, userId }) => {
   return (
-    <SessionProvider apiKey={apiKey} userId={userId}>
-      <Container />
-    </SessionProvider>
+    <AppLayout>
+      {isLoading && (
+        <div className="h-full w-full flex item-center justify-center">
+          loading...
+        </div>
+      )}
+      <ChatContextProvider>
+        {!isLoading ? (
+          chatId || !data?.length ? (
+            <Chat />
+          ) : (
+            <Conversations />
+          )
+        ) : null}
+      </ChatContextProvider>
+    </AppLayout>
   );
 };
 
-export default ChatApp;
+export default Container;

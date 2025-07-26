@@ -2,7 +2,7 @@
 
 import { useTicketChats } from "@/hooks/apiHooks";
 import { useChatNav } from "@/hooks/chat";
-import { useChatSocket } from "@/lib/sockets";
+import { useChatSocket } from "@/lib/sockets/chats";
 import { QUERY_FN_KEYS } from "@/utils/constants";
 import { MessageSenders } from "@/utils/enums";
 import { FC, MessageType, SocketResponseType } from "@/utils/types";

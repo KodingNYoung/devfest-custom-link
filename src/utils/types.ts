@@ -1,5 +1,6 @@
 import { HTMLProps, PropsWithChildren, ReactElement } from "react";
 import { MessageSenders } from "./enums";
+import { POST_MESSAGE_TYPES } from "./constants";
 
 export type TWClassNames = HTMLProps<HTMLElement>["className"];
 
@@ -38,6 +39,8 @@ export type PageFC<
   ): ReactElement | null | Promise<ReactElement | null>;
   displayName?: string;
 };
+
+export type ValueOf<K> = K[keyof K];
 
 export type DBResource = {
   id: string;
@@ -83,4 +86,10 @@ export type ConversationType = DBResource & {
   latest_message: MessageType;
   read_by_customer: boolean;
   read_by_agent: boolean;
+};
+
+export type PostMessageType<T = unknown> = {
+  type: ValueOf<typeof POST_MESSAGE_TYPES>;
+  data?: T;
+  timestamp: number;
 };
