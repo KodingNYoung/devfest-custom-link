@@ -86,7 +86,7 @@ export const ChatContextProvider: FC = ({ children }) => {
   const { data, isLoading } = useTicketChats(ticketChatId) || {};
   const { emitMessage, emitRead } = useChatSocket(ticketChatId, {
     onmessage: (message: SocketResponseType) => {
-      if (chatId === NEW_CHAT_ID) {
+      if (message.data.ticket_chat_id) {
         // if it's a new chat, set the chatId to the one received from the socket
         goToChat(message.data.ticket_chat_id);
       }
@@ -95,7 +95,7 @@ export const ChatContextProvider: FC = ({ children }) => {
         date_updated: message.data.date_updated,
         message: message.data.message,
         sender: message.data.sender,
-        is_attachment: false, //confirm this -- is it always false? meaning sate or agent cannot reply with attachments?
+        is_attachment: false, //TODO: confirm this -- is it always false? meaning sate or agent cannot reply with attachments?
         ticket_chat: message.data.ticket_chat_id,
       });
     },
