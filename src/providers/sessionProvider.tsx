@@ -2,7 +2,14 @@ import { useStorage } from "@/hooks/storage";
 import { POST_MESSAGE_TYPES } from "@/utils/constants";
 import { StorageKeys } from "@/utils/enums";
 import { FC, PostMessageType } from "@/utils/types";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { v4 as uuidV4 } from "uuid";
 
 type SessionContextType = {
@@ -31,9 +38,8 @@ export const SessionProvider: FC = ({ children }) => {
   const [userId, setUserId] = useState("");
   const [parentOrigin, setParentOrigin] = useState("");
 
-  useEffect(() => {
-    window.addEventListener("message", (event) => {
-      console.log("new message",event)
+  const handleMessage = useCallback(
+    (event: MessageEvent) => {
       if (event.origin === window.location.origin || hasReceivedMessage.current)
         return;
 
@@ -66,12 +72,16 @@ export const SessionProvider: FC = ({ children }) => {
         } as PostMessageType,
         { targetOrigin: event.origin }
       );
-    });
+    },
+    [storageUserId, setStorageUserId]
+  );
 
+  useEffect(() => {
+    window.addEventListener("message", handleMessage);
     return () => {
-      window.removeEventListener("message", console.log);
+      window.removeEventListener("message", handleMessage);
     };
-  }, [storageUserId, setStorageUserId]);
+  }, [storageUserId, setStorageUserId, handleMessage]);
 
   return (
     <SessionContext.Provider

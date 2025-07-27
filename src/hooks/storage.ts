@@ -13,7 +13,7 @@ export const useStorage = <T = unknown>(
       if (value === _value) {
         return;
       }
-      setValue(value ?? fallback)
+      setValue(value ?? fallback);
       if (value !== null) {
         localStorage.setItem(key, JSON.stringify(value));
       } else if (fallback !== null) {
