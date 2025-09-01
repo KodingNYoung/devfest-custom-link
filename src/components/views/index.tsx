@@ -6,10 +6,11 @@ import Conversations from "./conversations";
 import { useConversations } from "@/hooks/apiHooks";
 import { useChatNav } from "@/hooks/chat";
 import { ChatContextProvider } from "@/providers/chatProvider";
+import { TicketStatus } from "@/utils/enums";
 
 const Container: FC = () => {
   const { chatId } = useChatNav();
-  const { data, isLoading } = useConversations();
+  const { data, isLoading } = useConversations(TicketStatus.OPEN);
 
   return (
     <AppLayout>

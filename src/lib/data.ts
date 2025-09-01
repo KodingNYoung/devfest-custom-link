@@ -1,11 +1,17 @@
 import { ConversationType, DBResource, MessageType } from "@/utils/types";
 import { requestHandler } from "./request";
 import { ChatId } from "@/providers/chatProvider";
-import { MessageSenders } from "@/utils/enums";
+import { MessageSenders, TicketStatus } from "@/utils/enums";
 
-export const getUserConversations = async (apiKey: string, userId: string) => {
+export const getUserConversations = async (
+  apiKey: string,
+  userId: string,
+  filters: { status: TicketStatus }
+) => {
   const response = await requestHandler(
-    `/api/v1/helpdesk/customer/${userId}/conversations/`,
+    `/api/v1/helpdesk/customer/${userId}/conversations/?closed=${
+      filters.status === TicketStatus.CLOSED
+    }`,
     undefined,
     {
       headers: {

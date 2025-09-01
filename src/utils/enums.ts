@@ -7,3 +7,8 @@ export enum MessageSenders {
   SATE = "sate",
   AGENT = "agent",
 }
+
+export enum TicketStatus {
+  OPEN = "open",
+  CLOSED = "closed",
+}
