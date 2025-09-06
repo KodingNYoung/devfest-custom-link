@@ -77,15 +77,19 @@ export const ChatContextProvider: FC = ({ children }) => {
   const { chatId, goToChat } = useChatNav();
 
   const [messages, setMessages] = useState<MessageType[]>([]);
-  const [repsonder, setResponder] = useState<MessageSenders>();
-  const [isClosed, setIsClosed] = useState(false);
+  // const [repsonder, setResponder] = useState<MessageSenders>();
+  // const [isClosed, setIsClosed] = useState(false);
 
   const ticketChatId = useMemo(
     () => (chatId === NEW_CHAT_ID ? null : chatId),
     [chatId]
   );
 
-  const { data, isLoading, refetch } = useTicketChats(ticketChatId);
+  const {
+    data,
+    isLoading,
+    //  refetch
+  } = useTicketChats(ticketChatId);
 
   const { emitMessage, emitRead } = useChatSocket(ticketChatId, {
     onmessage: (message: SocketResponseType) => {
@@ -155,8 +159,8 @@ export const ChatContextProvider: FC = ({ children }) => {
 
   useEffect(() => {
     setMessages(data?.messages || []);
-    setResponder(data?.responder);
-    setIsClosed(Boolean(data?.closed));
+    // setResponder(data?.responder);
+    // setIsClosed(Boolean(data?.closed));
   }, [data]);
 
   return (
