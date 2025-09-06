@@ -63,7 +63,6 @@ export const useSocket = (
       query,
     });
 
-
     // Race condition protector
     if (connectionId === connectionAttemptsRef.current) {
       socketRef.current = socket;
@@ -74,6 +73,7 @@ export const useSocket = (
 
     // events
     socket.on("disconnect", (reason) => {
+      console.log(reason);
       setIsConnected(false);
       if (events?.disconnect) events.disconnect(reason, socket);
     });
@@ -81,6 +81,7 @@ export const useSocket = (
       setIsConnected(true);
       if (events?.connect) events.connect(socket);
     });
+    socket.on("connect_error", (data) => console.log(data));
 
     return () => {
       if (connectionId === connectionAttemptsRef.current) {

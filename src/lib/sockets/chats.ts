@@ -10,7 +10,7 @@ export const useChatSocket = (
   cb?: { onmessage?: (message: SocketResponseType) => void }
 ) => {
   const { onmessage } = cb || {};
-  const { userId, isAuthUser } = useUserSession();
+  const { sessionId } = useUserSession();
 
   const { socket, isConnected } = useSocket(`/helpdesk`);
 
@@ -29,8 +29,7 @@ export const useChatSocket = (
         message,
         attachment: false,
         ticket_chat_id: chatId,
-        user_id: isAuthUser ? userId : undefined,
-        anon_user_id: isAuthUser ? undefined : userId,
+        session_id: sessionId,
       } as SocketRequestMessageType;
 
       console.log(payload);
@@ -39,7 +38,7 @@ export const useChatSocket = (
 
       return payload;
     },
-    [chatId, isAuthUser, userId, socket, isConnected]
+    [chatId, sessionId, socket, isConnected]
   );
 
   const emitRead = useCallback(

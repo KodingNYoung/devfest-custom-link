@@ -58,17 +58,11 @@ export type SocketResponseMessageType = {
 export type SocketResponseType = {
   data: SocketResponseMessageType;
 };
-export type SocketRequestMessageType = (
-  | {
-      user_id: string;
-    }
-  | {
-      anon_user_id: string;
-    }
-) & {
+export type SocketRequestMessageType = {
   message: string;
   attachment?: boolean;
   ticket_chat_id: string;
+  session_id: string;
 };
 
 export type MessageType = DBResource & {

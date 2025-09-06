@@ -14,28 +14,24 @@ import { v4 as uuidV4 } from "uuid";
 
 type SessionContextType = {
   apiKey: string;
-  userId: string;
-  isAuthUser: boolean;
+  sessionId: string;
   parentOrigin: string;
 };
-type InitializationData = { apiKey: string; userId?: string };
+type InitializationData = { apiKey: string };
 
 const SessionContext = createContext<SessionContextType>({
   apiKey: "",
-  userId: "",
-  isAuthUser: false,
+  sessionId: "",
   parentOrigin: "",
 });
 
 export const SessionProvider: FC = ({ children }) => {
-  const { data: storageUserId, set: setStorageUserId } = useStorage<string>(
-    StorageKeys.USER_ID
-  );
+  const { data: storageSessionId, set: setStorageSessionId } =
+    useStorage<string>(StorageKeys.SESSION_ID);
 
   const hasReceivedMessage = useRef(false);
 
   const [apiKey, setApiKey] = useState("");
-  const [userId, setUserId] = useState("");
   const [parentOrigin, setParentOrigin] = useState("");
 
   const handleMessage = useCallback(
@@ -55,25 +51,20 @@ export const SessionProvider: FC = ({ children }) => {
 
       setApiKey(data.data.apiKey);
 
-      if (data.data.userId) {
-        setUserId(data.data.userId);
-      } else {
-        if (storageUserId === null) {
-          const uuid = uuidV4();
-          setStorageUserId(uuid);
-        }
+      if (storageSessionId === null) {
+        const uuid = uuidV4();
+        setStorageSessionId(uuid);
       }
 
       event.source?.postMessage(
         {
           type: POST_MESSAGE_TYPES.READY,
-          userId,
           timestamp: Date.now(),
         } as PostMessageType,
         { targetOrigin: event.origin }
       );
     },
-    [storageUserId, setStorageUserId]
+    [storageSessionId, setStorageSessionId]
   );
 
   useEffect(() => {
@@ -81,14 +72,13 @@ export const SessionProvider: FC = ({ children }) => {
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, [storageUserId, setStorageUserId, handleMessage]);
+  }, [storageSessionId, setStorageSessionId, handleMessage]);
 
   return (
     <SessionContext.Provider
       value={{
         apiKey,
-        userId: userId || (storageUserId as string),
-        isAuthUser: !!userId,
+        sessionId: storageSessionId as string,
         parentOrigin,
       }}
     >

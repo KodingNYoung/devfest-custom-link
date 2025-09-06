@@ -5,11 +5,11 @@ import { MessageSenders, TicketStatus } from "@/utils/enums";
 
 export const getUserConversations = async (
   apiKey: string,
-  userId: string,
+  sessionId: string,
   filters: { status: TicketStatus }
 ) => {
   const response = await requestHandler(
-    `/api/v1/helpdesk/customer/${userId}/conversations/?closed=${
+    `/api/v1/helpdesk/customer/${sessionId}/conversations/?closed=${
       filters.status === TicketStatus.CLOSED
     }`,
     undefined,
@@ -31,11 +31,11 @@ export type GetTicketChatsResponse = DBResource & {
 };
 export const getTicketChats = async (
   apiKey: string,
-  userId: string,
+  sessionId: string,
   chatId: ChatId
 ) => {
   const response = await requestHandler(
-    `/api/v1/helpdesk/customer/${userId}/conversations/${chatId}/messages/`,
+    `/api/v1/helpdesk/customer/${sessionId}/conversations/${chatId}/messages/`,
     undefined,
     {
       headers: {

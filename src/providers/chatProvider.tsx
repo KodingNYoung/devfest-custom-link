@@ -72,18 +72,21 @@ export const ChatContext = createContext<ChatContextProps>({
 export const ChatContextProvider: FC = ({ children }) => {
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const queryClient = useQueryClient();
-  const { userId } = useUserSession();
+  const { sessionId } = useUserSession();
 
   const { chatId, goToChat } = useChatNav();
 
   const [messages, setMessages] = useState<MessageType[]>([]);
+  const [repsonder, setResponder] = useState<MessageSenders>();
+  const [isClosed, setIsClosed] = useState(false);
 
   const ticketChatId = useMemo(
     () => (chatId === NEW_CHAT_ID ? null : chatId),
     [chatId]
   );
 
-  const { data, isLoading } = useTicketChats(ticketChatId) || {};
+  const { data, isLoading, refetch } = useTicketChats(ticketChatId);
+
   const { emitMessage, emitRead } = useChatSocket(ticketChatId, {
     onmessage: (message: SocketResponseType) => {
       if (message.data.ticket_chat_id) {
@@ -146,12 +149,14 @@ export const ChatContextProvider: FC = ({ children }) => {
     emitRead(ticketChatId);
     // invalid conversations
     queryClient.invalidateQueries({
-      queryKey: [...QUERY_FN_KEYS.CONVERSATIONS, userId],
+      queryKey: [...QUERY_FN_KEYS.CONVERSATIONS, sessionId],
     });
-  }, [ticketChatId, emitRead, queryClient, userId]);
+  }, [ticketChatId, emitRead, queryClient, sessionId]);
 
   useEffect(() => {
     setMessages(data?.messages || []);
+    setResponder(data?.responder);
+    setIsClosed(Boolean(data?.closed));
   }, [data]);
 
   return (
