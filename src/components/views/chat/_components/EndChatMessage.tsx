@@ -32,7 +32,7 @@ const EndChatMessage: FC = () => {
                 </button>
               </div>
               <span className="text-gray-400 text-regular-xs">
-                Please click 'yes' if your previous issues are fully resolved.
+                Please click &apos;yes&apos; if your previous issues are fully resolved.
                 Feel free to start a new conversation for any new concerns.
               </span>
             </>

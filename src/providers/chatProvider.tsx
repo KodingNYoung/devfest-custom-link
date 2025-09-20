@@ -209,7 +209,7 @@ export const ChatContextProvider: FC = ({ children }) => {
   );
 
   useEffect(() => {
-    setResponder(data?.responder!);
+    setResponder(data?.responder || MessageSenders.SATE);
     setIsClosed(Boolean(data?.closed));
     setShowCloseSupport(Boolean(data?.close_support));
     setTicketRating(data?.rating || null);
