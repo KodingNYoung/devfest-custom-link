@@ -25,6 +25,10 @@ export const getUserConversations = async (
 
 export type GetTicketChatsResponse = DBResource & {
   closed: boolean;
+  close_support: boolean;
+  rating: number | null;
+  read_by_customer: boolean;
+  read_by_agent: boolean;
   responder: MessageSenders;
   ticket: string;
   messages: MessageType[];

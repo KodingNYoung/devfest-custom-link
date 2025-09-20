@@ -5,6 +5,7 @@ import HostMessageBox from "./HostMessageBox";
 import { MessageSenders } from "@/utils/enums";
 import { useChat } from "@/hooks/chat";
 import EmptyChatWall from "./EmptyChatWall";
+import EndOfMessage from "./EndOfMessage";
 
 const ChatWall: FC = () => {
   const { messages, isLoading } = useChat();
@@ -24,6 +25,7 @@ const ChatWall: FC = () => {
           <HostMessageBox key={message.id} message={message} />
         );
       })}
+      <EndOfMessage />
     </div>
   );
 };

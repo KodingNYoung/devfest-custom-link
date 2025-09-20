@@ -91,7 +91,7 @@ export const useUserSession = () => {
   const context = useContext(SessionContext);
   if (!context) {
     throw new Error(
-      "useUserSession should be called in sider a SessionContextProvider component"
+      "useUserSession should be called inside a SessionContextProvider component"
     );
   }
   return context;

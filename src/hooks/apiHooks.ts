@@ -9,7 +9,8 @@ export const useConversations = (status: TicketStatus) => {
 
   const result = useQuery({
     queryKey: [...QUERY_FN_KEYS.CONVERSATIONS, sessionId, { status }],
-    queryFn: async () => await getUserConversations(apiKey, sessionId, { status }),
+    queryFn: async () =>
+      await getUserConversations(apiKey, sessionId, { status }),
     enabled: Boolean(sessionId && apiKey),
     staleTime: 5 * 60 * 1000, // 5mins
   });
@@ -22,9 +23,10 @@ export const useTicketChats = (chatId: string | null) => {
 
   const result = useQuery({
     queryKey: [...QUERY_FN_KEYS.TICKET_CHAT, sessionId, chatId],
-    queryFn: async () => await getTicketChats(apiKey, sessionId, chatId as string),
+    queryFn: async () =>
+      await getTicketChats(apiKey, sessionId, chatId as string),
     retry: 0,
-    enabled: !!chatId,
+    enabled: !!chatId && Boolean(sessionId && apiKey),
   });
 
   return result;

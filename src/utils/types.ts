@@ -1,5 +1,5 @@
 import { HTMLProps, PropsWithChildren, ReactElement } from "react";
-import { MessageSenders } from "./enums";
+import { FileExtensions, MessageSenders } from "./enums";
 import { POST_MESSAGE_TYPES } from "./constants";
 
 export type TWClassNames = HTMLProps<HTMLElement>["className"];
@@ -47,16 +47,30 @@ export type DBResource = {
   date_created: string;
   date_updated: string;
 };
-
 export type SocketResponseMessageType = {
-  ticket_chat_id: string;
-  sender: MessageSenders;
-  message: string;
+  attachment: boolean;
+  attachment_metadata: AttachmentMetadata;
+  close_support: boolean;
+  closed_support: boolean;
   date_created: string;
   date_updated: string;
+  message: string;
+  sender: MessageSenders;
+  ticket_chat_id: string;
+};
+export type AttachmentMetadata = {
+  url: string;
+  name: string;
+  size_kb: number;
+  extension: FileExtensions;
+  loading?: boolean;
+  error?: boolean;
 };
 export type SocketResponseType = {
   data: SocketResponseMessageType;
+};
+export type TicketRatingSocketResponse = {
+  data: { rating: number; review: string | null; ticket_chat_id: string };
 };
 export type SocketRequestMessageType = {
   message: string;

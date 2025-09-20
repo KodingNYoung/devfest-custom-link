@@ -5,7 +5,12 @@ import { useChatNav } from "@/hooks/chat";
 import { useChatSocket } from "@/lib/sockets/chats";
 import { QUERY_FN_KEYS } from "@/utils/constants";
 import { MessageSenders } from "@/utils/enums";
-import { FC, MessageType, SocketResponseType } from "@/utils/types";
+import {
+  FC,
+  MessageType,
+  SocketResponseType,
+  TicketRatingSocketResponse,
+} from "@/utils/types";
 import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import {
@@ -57,16 +62,30 @@ type ChatContextProps = {
   messages: MessageType[];
   isLoading: boolean;
   scrollRef?: RefObject<HTMLDivElement | null>;
+  responder: MessageSenders;
+  isClosed: boolean;
+  showCloseSupport: boolean;
+  ticketRating: number | null;
   sendMessage: (message: string) => void;
   readChat: () => void;
   scrollToBottom: (behavior?: ScrollBehavior, delay?: number) => void;
+  openSupport: () => void;
+  closeTicket: () => void;
+  rateTicket: (rating: number) => void;
 };
 export const ChatContext = createContext<ChatContextProps>({
   messages: [],
   isLoading: true,
+  responder: MessageSenders.SATE,
+  isClosed: false,
+  showCloseSupport: false,
+  ticketRating: null,
   sendMessage: () => {},
   readChat: () => {},
   scrollToBottom: () => {},
+  openSupport: () => {},
+  closeTicket: () => {},
+  rateTicket: () => {},
 });
 
 export const ChatContextProvider: FC = ({ children }) => {
@@ -77,36 +96,19 @@ export const ChatContextProvider: FC = ({ children }) => {
   const { chatId, goToChat } = useChatNav();
 
   const [messages, setMessages] = useState<MessageType[]>([]);
-  // const [repsonder, setResponder] = useState<MessageSenders>();
-  // const [isClosed, setIsClosed] = useState(false);
+  const [responder, setResponder] = useState<MessageSenders>(
+    MessageSenders.SATE
+  );
+  const [isClosed, setIsClosed] = useState(false);
+  const [showCloseSupport, setShowCloseSupport] = useState(false);
+  const [ticketRating, setTicketRating] = useState<number | null>(null);
 
   const ticketChatId = useMemo(
     () => (chatId === NEW_CHAT_ID ? null : chatId),
     [chatId]
   );
 
-  const {
-    data,
-    isLoading,
-    //  refetch
-  } = useTicketChats(ticketChatId);
-
-  const { emitMessage, emitRead } = useChatSocket(ticketChatId, {
-    onmessage: (message: SocketResponseType) => {
-      if (message.data.ticket_chat_id) {
-        // if it's a new chat, set the chatId to the one received from the socket
-        goToChat(message.data.ticket_chat_id);
-      }
-      updateMessages({
-        date_created: message.data.date_created,
-        date_updated: message.data.date_updated,
-        message: message.data.message,
-        sender: message.data.sender,
-        is_attachment: false, //TODO: confirm this -- is it always false? meaning sate or agent cannot reply with attachments?
-        ticket_chat: message.data.ticket_chat_id,
-      });
-    },
-  });
+  const { data, isLoading } = useTicketChats(ticketChatId);
 
   //   functions
   const scrollToBottom = useCallback(
@@ -130,6 +132,46 @@ export const ChatContextProvider: FC = ({ children }) => {
     },
     [scrollToBottom]
   );
+
+  // socket event handlers
+  const onmessage = (message: SocketResponseType) => {
+    if (message.data.ticket_chat_id) {
+      // if it's a new chat, set the chatId to the one received from the socket
+      goToChat(message.data.ticket_chat_id);
+    }
+    // refetch the chat to update responder, close support, and close status
+    setResponder(message.data.sender);
+    setIsClosed(Boolean(message.data.closed_support));
+    setShowCloseSupport(Boolean(message.data.close_support));
+
+    // emit read
+    emitRead(message.data.ticket_chat_id);
+
+    // update chat messages
+    updateMessages({
+      date_created: message.data.date_created,
+      date_updated: message.data.date_updated,
+      message: message.data.message,
+      sender: message.data.sender,
+      is_attachment: false, //TODO: confirm this -- is it always false? meaning sate or agent cannot reply with attachments?
+      ticket_chat: message.data.ticket_chat_id,
+    });
+  };
+  const oncloseticket = () => {
+    setShowCloseSupport(false);
+    setIsClosed(true);
+    queryClient.invalidateQueries({
+      queryKey: QUERY_FN_KEYS.CONVERSATIONS,
+    });
+  };
+  const onreviewticket = (data: TicketRatingSocketResponse) => {
+    setTicketRating(data?.data?.rating);
+  };
+
+  const { emitMessage, emitRead, emitCloseSupport, emitRateSupport } =
+    useChatSocket(ticketChatId, { onmessage, oncloseticket, onreviewticket });
+
+  // user actions
   const sendMessage = useCallback(
     (message: string) => {
       // emit message
@@ -156,11 +198,23 @@ export const ChatContextProvider: FC = ({ children }) => {
       queryKey: [...QUERY_FN_KEYS.CONVERSATIONS, sessionId],
     });
   }, [ticketChatId, emitRead, queryClient, sessionId]);
+  const closeTicket = useCallback(() => {
+    emitCloseSupport();
+  }, [ticketChatId, emitCloseSupport]);
+  const rateTicket = useCallback(
+    (rating: number) => {
+      emitRateSupport(rating);
+    },
+    [ticketChatId, emitRateSupport]
+  );
 
   useEffect(() => {
+    setResponder(data?.responder!);
+    setIsClosed(Boolean(data?.closed));
+    setShowCloseSupport(Boolean(data?.close_support));
+    setTicketRating(data?.rating || null);
+
     setMessages(data?.messages || []);
-    // setResponder(data?.responder);
-    // setIsClosed(Boolean(data?.closed));
   }, [data]);
 
   return (
@@ -169,9 +223,16 @@ export const ChatContextProvider: FC = ({ children }) => {
         messages,
         isLoading: Boolean(isLoading),
         scrollRef: chatScrollRef,
+        responder,
+        isClosed: isClosed,
+        showCloseSupport: showCloseSupport,
+        ticketRating,
         sendMessage,
         readChat,
         scrollToBottom,
+        openSupport: () => setShowCloseSupport(false),
+        closeTicket,
+        rateTicket,
       }}
     >
       {children}

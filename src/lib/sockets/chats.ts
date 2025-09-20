@@ -1,15 +1,23 @@
 import { ChatId } from "@/providers/chatProvider";
 import { useUserSession } from "@/providers/sessionProvider";
 import { MessageSenders } from "@/utils/enums";
-import { SocketRequestMessageType, SocketResponseType } from "@/utils/types";
+import {
+  SocketRequestMessageType,
+  SocketResponseType,
+  TicketRatingSocketResponse,
+} from "@/utils/types";
 import { useCallback, useEffect } from "react";
 import { useSocket } from ".";
 
 export const useChatSocket = (
   chatId: ChatId | null,
-  cb?: { onmessage?: (message: SocketResponseType) => void }
+  cb?: {
+    onmessage?: (message: SocketResponseType) => void;
+    oncloseticket?: (message: SocketResponseType) => void;
+    onreviewticket?: (message: TicketRatingSocketResponse) => void;
+  }
 ) => {
-  const { onmessage } = cb || {};
+  const { onmessage, oncloseticket, onreviewticket } = cb || {};
   const { sessionId } = useUserSession();
 
   const { socket, isConnected } = useSocket(`/helpdesk`);
@@ -19,6 +27,12 @@ export const useChatSocket = (
 
     socket.on("support", (data: SocketResponseType) => {
       if (onmessage) onmessage(data);
+    });
+    socket.on("close_support", (data: SocketResponseType) => {
+      if (oncloseticket) oncloseticket(data);
+    });
+    socket.on("review_support", (data: TicketRatingSocketResponse) => {
+      if (onreviewticket) onreviewticket(data);
     });
   }, [socket]);
 
@@ -31,8 +45,6 @@ export const useChatSocket = (
         ticket_chat_id: chatId,
         session_id: sessionId,
       } as SocketRequestMessageType;
-
-      console.log(payload);
 
       socket.emit("support", payload);
 
@@ -53,5 +65,25 @@ export const useChatSocket = (
     [socket, isConnected]
   );
 
-  return { emitMessage, emitRead };
+  const emitCloseSupport = useCallback(() => {
+    if (!socket || !chatId || !isConnected) return;
+    const payload = {
+      ticket_chat_id: chatId,
+    };
+    socket.emit("close_support", payload);
+  }, [socket, isConnected, chatId]);
+
+  const emitRateSupport = useCallback(
+    (rating: number) => {
+      if (!socket || !chatId || !isConnected || !rating) return;
+      const payload = {
+        ticket_chat_id: chatId,
+        rating: rating,
+      };
+      socket.emit("review_support", payload);
+    },
+    [socket, isConnected, chatId]
+  );
+
+  return { emitMessage, emitRead, emitCloseSupport, emitRateSupport };
 };

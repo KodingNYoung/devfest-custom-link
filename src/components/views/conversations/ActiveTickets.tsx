@@ -8,10 +8,17 @@ import TicketsList from "./_components/TicketsList";
 
 const ActiveTickets: FC = () => {
   const { openNewChat } = useChatNav();
-  const { data: conversations = [] } = useConversations(TicketStatus.OPEN);
-  return (
+  const { data: conversations = [], isLoading } = useConversations(
+    TicketStatus.OPEN
+  );
+  return isLoading ? (
+    <>loading conversation...</>
+  ) : (
     <>
-      <TicketsList tickets={conversations} />
+      <TicketsList
+        emptyMessage="No active conversations. Click on the button below to start a new conversation"
+        tickets={conversations}
+      />
       {conversations.length < 3 && (
         <button
           className="flex items-center justify-center gap-1.5 bg-black rounded-full text-white !leading-none cursor-pointer opacity-80 hover:opacity-100 p-2.5 transition-opacity duration-200 active:opacity-90"

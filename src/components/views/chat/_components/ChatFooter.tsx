@@ -1,11 +1,12 @@
 import Icon from "@/components/atoms/Icon";
 import Textarea from "@/components/molecules/Textarea";
 import { useChat } from "@/hooks/chat";
+import { MessageSenders } from "@/utils/enums";
 import { FC } from "@/utils/types";
 import React from "react";
 
 const ChatFooter: FC = () => {
-  const { sendMessage } = useChat();
+  const { sendMessage, responder, showCloseSupport, isClosed } = useChat();
 
   const handleSubmit = (formdata: FormData) => {
     const message = formdata.get("msg") as string;
@@ -13,16 +14,18 @@ const ChatFooter: FC = () => {
     sendMessage(message);
   };
 
-  return (
+  return showCloseSupport || isClosed ? null : (
     <form
       action={handleSubmit}
       className="px-6 sticky mt-auto left-0 bottom-0 flex items-end gap-2 w-full bg-white pb-5 z-[1]"
     >
-      <div className="h-10 flex items-center">
-        <button type="button">
-          <Icon name="icon-attach-circle" size={18} />
-        </button>
-      </div>
+      {responder === MessageSenders.AGENT ? (
+        <div className="h-10 flex items-center">
+          <button type="button">
+            <Icon name="icon-attach-circle" size={18} />
+          </button>
+        </div>
+      ) : null}
       <Textarea
         name="msg"
         rows={1}

@@ -2,7 +2,7 @@ import ChatLoader from "@/components/atoms/ChatLoader";
 import Icon from "@/components/atoms/Icon";
 import { cls, formatToMessageTime } from "@/utils/helpers";
 import { FC, MessageType } from "@/utils/types";
-import React, { useRef } from "react";
+import React from "react";
 
 type Props = {
   typing?: boolean;
@@ -10,10 +10,8 @@ type Props = {
 };
 
 const GuestMessageBox: FC<Props> = ({ typing, message }) => {
-  const textBoxRef = useRef<HTMLDivElement>(null);
-
   return (
-    <section className="flex gap-1.5 items-end w-[80%]">
+    <section className="flex gap-1.5 items-end w-[80%] max-w-[230px]">
       <div className="size-7 min-h-7 min-w-7 flex justify-center items-center rounded-full bg-black text-white">
         <Icon name="icon-eusate" size={12} />
       </div>
@@ -28,7 +26,6 @@ const GuestMessageBox: FC<Props> = ({ typing, message }) => {
         ) : (
           <>
             <span
-              ref={textBoxRef}
               className="text-medium-xs [&_ol]:list-decimal [&_ol]:list-inside [&_ul]:list-inside text-gray-900 [&_a]:text-info-500 [&_a]:underline"
               dangerouslySetInnerHTML={{
                 __html: message?.message?.trim(),

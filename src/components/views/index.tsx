@@ -10,18 +10,22 @@ import { TicketStatus } from "@/utils/enums";
 
 const Container: FC = () => {
   const { chatId } = useChatNav();
-  const { data, isLoading } = useConversations(TicketStatus.OPEN);
+  const { data: openTickets, isLoading: loadingOpenTickets } = useConversations(
+    TicketStatus.OPEN
+  );
+  const { data: closedTickets, isLoading: loadingClosedTickets } =
+    useConversations(TicketStatus.CLOSED);
 
   return (
     <AppLayout>
-      {isLoading && (
+      {(loadingOpenTickets || loadingClosedTickets) && (
         <div className="h-full w-full flex item-center justify-center">
           loading...
         </div>
       )}
       <ChatContextProvider>
-        {!isLoading ? (
-          chatId || !data?.length ? (
+        {!(loadingOpenTickets || loadingClosedTickets) ? (
+          chatId || (!openTickets?.length && !closedTickets?.length) ? (
             <Chat />
           ) : (
             <Conversations />
