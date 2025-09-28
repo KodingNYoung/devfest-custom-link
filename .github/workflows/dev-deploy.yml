@@ -1,0 +1,32 @@
+name: Deploy to Eusate VM
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: SSH into VM and deploy
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          ENV_FILE: ${{ secrets.ENV }}
+        run: |
+          echo "Deploying branch: $BRANCH_NAME"
+          ENV_FILE_B64=$(echo "$ENV_FILE" | base64 -w 0)
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@104.248.165.115 << EOF
+            set -e
+            cd /home/eusate/eusate-fe
+            GIT_SSH_COMMAND="ssh -i /root/.ssh/id_rsa2" git fetch origin $BRANCH_NAME
+            GIT_SSH_COMMAND="ssh -i /root/.ssh/id_rsa2" git checkout $BRANCH_NAME
+            GIT_SSH_COMMAND="ssh -i /root/.ssh/id_rsa2" git pull origin $BRANCH_NAME
+            echo "$ENV_FILE_B64" | base64 -d > .env
+            docker compose -f dev.docker-compose.yml build 
+            docker compose -f dev.docker-compose.yml up -d
+            docker images -f "dangling=true" -q | xargs -r docker rmi
+          EOF
