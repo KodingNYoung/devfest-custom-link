@@ -16,7 +16,7 @@ const TicketsList: FC<Props> = ({ tickets, emptyMessage }) => {
           .sort((a, b) =>
             a?.latest_message?.date_created > b?.latest_message?.date_created
               ? -1
-              : 1
+              : 1,
           )
           .map((ticket, idx) => {
             return (

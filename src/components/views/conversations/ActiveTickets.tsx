@@ -9,7 +9,7 @@ import TicketsList from "./_components/TicketsList";
 const ActiveTickets: FC = () => {
   const { openNewChat } = useChatNav();
   const { data: conversations = [], isLoading } = useConversations(
-    TicketStatus.OPEN
+    TicketStatus.OPEN,
   );
 
   return isLoading ? (

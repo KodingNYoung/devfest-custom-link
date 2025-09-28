@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 export const useStorage = <T = unknown>(
   key: StorageKeys,
-  fallback: T | null = null
+  fallback: T | null = null,
 ) => {
   const [_value, setValue] = useState<T | null>();
 
@@ -22,7 +22,7 @@ export const useStorage = <T = unknown>(
         localStorage.removeItem(key);
       }
     },
-    [_value, key, fallback]
+    [_value, key, fallback],
   );
 
   const refetch = useCallback(() => {
@@ -49,6 +49,6 @@ export const useStorage = <T = unknown>(
       set,
       refetch,
     }),
-    [_value, set, refetch]
+    [_value, set, refetch],
   );
 };

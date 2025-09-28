@@ -35,5 +35,5 @@ export const requestHandler = cache(
     } catch (err) {
       throw err;
     }
-  }
+  },
 );

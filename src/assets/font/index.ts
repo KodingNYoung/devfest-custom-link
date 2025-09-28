@@ -1,4 +1,4 @@
-import localFont from "next/font/local"
+import localFont from "next/font/local";
 
 export const plusJakartaSans = localFont<"--font-app">({
   src: [
@@ -10,4 +10,4 @@ export const plusJakartaSans = localFont<"--font-app">({
   variable: "--font-app",
   display: "swap",
   adjustFontFallback: false,
-})
+});

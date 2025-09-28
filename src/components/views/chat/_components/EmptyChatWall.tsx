@@ -11,7 +11,8 @@ const EmptyChatWall: FC = () => {
         </div>
         <span className="text-center text-medium-xs text-gray-400">
           You are about to start a chat with our support team. Please share the
-          issue you&apos;re experiencing, and we&apos;ll work together to resolve it.
+          issue you&apos;re experiencing, and we&apos;ll work together to
+          resolve it.
         </span>
       </div>
     </div>

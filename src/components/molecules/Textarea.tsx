@@ -24,7 +24,7 @@ const Textarea: FC<InputProps> = ({
         <div
           className={cls(
             "flex items-center relative rounded-[20px] border border-[#E4E7EC]",
-            classNames?.inputContainer
+            classNames?.inputContainer,
           )}
         >
           <TextareaAutosize
@@ -34,7 +34,7 @@ const Textarea: FC<InputProps> = ({
               "p-3 transition-colors duration-200 outline-0 w-full relative text-regular-xs font-app text-gray-900 bg-white-100",
               "placeholder:text-regular-xs placeholder:text-gray-400 rounded-[inherit] resize-none",
               className,
-              classNames?.input
+              classNames?.input,
             )}
             name={name}
             id={id || name}

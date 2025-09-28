@@ -4,10 +4,8 @@
 
 @import "../assets/icomoon/style.css";
 
-
 @layer base {
-    body {
-        @apply font-app antialiased  h-full;
-    }
+  body {
+    @apply font-app antialiased  h-full;
+  }
 }
-

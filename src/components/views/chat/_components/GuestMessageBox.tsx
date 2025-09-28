@@ -18,7 +18,7 @@ const GuestMessageBox: FC<Props> = ({ typing, message }) => {
       <div
         className={cls(
           "bg-gold-50 w-fit min-w-[100px] rounded-xl px-2 grid gap-1.5",
-          typing ? "py-0.5" : "py-2"
+          typing ? "py-0.5" : "py-2",
         )}
       >
         {typing ? (

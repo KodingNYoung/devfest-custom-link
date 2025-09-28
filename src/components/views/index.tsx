@@ -11,7 +11,7 @@ import { TicketStatus } from "@/utils/enums";
 const Container: FC = () => {
   const { chatId } = useChatNav();
   const { data: openTickets, isLoading: loadingOpenTickets } = useConversations(
-    TicketStatus.OPEN
+    TicketStatus.OPEN,
   );
   const { data: closedTickets, isLoading: loadingClosedTickets } =
     useConversations(TicketStatus.CLOSED);

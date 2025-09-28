@@ -30,7 +30,7 @@ const RatingMessage: FC = () => {
                   className={cls(
                     "cursor-pointer fill-transparent stroke-gray-700 transition-colors p-0.5",
                     (star <= hoveredStar || star <= (ticketRating || 0)) &&
-                      "fill-warning-400 stroke-warning-500"
+                      "fill-warning-400 stroke-warning-500",
                   )}
                   onClick={() => rateTicket(star)}
                 >

@@ -15,7 +15,7 @@ export const useChatSocket = (
     onmessage?: (message: SocketResponseType) => void;
     oncloseticket?: (message: SocketResponseType) => void;
     onreviewticket?: (message: TicketRatingSocketResponse) => void;
-  }
+  },
 ) => {
   const { onmessage, oncloseticket, onreviewticket } = cb || {};
   const { sessionId } = useUserSession();
@@ -44,7 +44,7 @@ export const useChatSocket = (
       };
       socket.emit("enter_support", payload);
     },
-    [socket, isConnected]
+    [socket, isConnected],
   );
 
   const emitMessage = useCallback(
@@ -61,7 +61,7 @@ export const useChatSocket = (
 
       return payload;
     },
-    [chatId, sessionId, socket, isConnected]
+    [chatId, sessionId, socket, isConnected],
   );
 
   const emitRead = useCallback(
@@ -73,7 +73,7 @@ export const useChatSocket = (
       };
       socket.emit("mark_conversation_read", payload);
     },
-    [socket, isConnected]
+    [socket, isConnected],
   );
 
   const emitCloseSupport = useCallback(() => {
@@ -93,7 +93,7 @@ export const useChatSocket = (
       };
       socket.emit("review_support", payload);
     },
-    [socket, isConnected, chatId]
+    [socket, isConnected, chatId],
   );
 
   return {

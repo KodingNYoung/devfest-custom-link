@@ -102,7 +102,7 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
 
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [responder, setResponder] = useState<MessageSenders>(
-    MessageSenders.SATE
+    MessageSenders.SATE,
   );
   const [isClosed, setIsClosed] = useState(false);
   const [showCloseSupport, setShowCloseSupport] = useState(false);
@@ -110,7 +110,7 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
 
   const ticketChatId = useMemo(
     () => (chatId === NEW_CHAT_ID ? null : chatId),
-    [chatId]
+    [chatId],
   );
 
   const { data, isLoading } = useTicketChats(ticketChatId);
@@ -128,14 +128,14 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
         }
       }, delay);
     },
-    []
+    [],
   );
   const updateMessages = useCallback(
     (messageObj: Omit<MessageType, "id">) => {
       setMessages((prev) => [...prev, { ...messageObj, id: uuidV4() }]);
       scrollToBottom();
     },
-    [scrollToBottom]
+    [scrollToBottom],
   );
 
   // socket event handlers
@@ -209,7 +209,7 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
         });
       }
     },
-    [emitMessage, chatId, updateMessages]
+    [emitMessage, chatId, updateMessages],
   );
   const readChat = useCallback(() => {
     if (!ticketChatId) return;
@@ -226,7 +226,7 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
     (rating: number) => {
       emitRateSupport(rating);
     },
-    [ticketChatId, emitRateSupport]
+    [ticketChatId, emitRateSupport],
   );
 
   useEffect(() => {

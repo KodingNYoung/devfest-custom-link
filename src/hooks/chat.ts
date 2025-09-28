@@ -5,7 +5,7 @@ export const useChatNav = () => {
   const context = useContext(ChatNavContext);
   if (!context) {
     throw new Error(
-      "useChatNav should be called inside a ChatNavContextProvider"
+      "useChatNav should be called inside a ChatNavContextProvider",
     );
   }
 
@@ -25,7 +25,7 @@ export const useChatScroll = () => {
   const context = useContext(ChatContext);
   if (!context) {
     throw new Error(
-      "useChatScroll should be called inside a ChatContextProvider"
+      "useChatScroll should be called inside a ChatContextProvider",
     );
   }
 

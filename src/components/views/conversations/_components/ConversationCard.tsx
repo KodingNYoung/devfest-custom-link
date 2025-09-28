@@ -44,14 +44,14 @@ const ConversationCard: FC<Props> = ({ conversation }) => {
               "truncate w-full text-left",
               !conversation.read_by_customer
                 ? "text-medium-xs text-gray-900"
-                : "text-regular-xs text-gray-400"
+                : "text-regular-xs text-gray-400",
             )}
           >
             {conversation.latest_message.sender === MessageSenders.CUSTOMER
               ? "You: "
               : conversation.latest_message.sender === MessageSenders.SATE
-              ? "Sate: "
-              : "Agent: "}{" "}
+                ? "Sate: "
+                : "Agent: "}{" "}
             {conversation.latest_message.message}
           </span>
           <span className="flex-1" />

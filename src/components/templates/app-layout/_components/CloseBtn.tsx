@@ -24,7 +24,7 @@ const CloseBtn = () => {
                 type: POST_MESSAGE_TYPES.CLOSE_CHAT,
                 timestamp: Date.now(),
               } as PostMessageType,
-              parentOrigin
+              parentOrigin,
             );
           }
         }}

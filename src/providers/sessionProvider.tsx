@@ -61,10 +61,10 @@ export const SessionProvider: FC = ({ children }) => {
           type: POST_MESSAGE_TYPES.READY,
           timestamp: Date.now(),
         } as PostMessageType,
-        { targetOrigin: event.origin }
+        { targetOrigin: event.origin },
       );
     },
-    [storageSessionId, setStorageSessionId]
+    [storageSessionId, setStorageSessionId],
   );
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export const useUserSession = () => {
   const context = useContext(SessionContext);
   if (!context) {
     throw new Error(
-      "useUserSession should be called inside a SessionContextProvider component"
+      "useUserSession should be called inside a SessionContextProvider component",
     );
   }
   return context;

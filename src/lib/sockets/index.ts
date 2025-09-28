@@ -21,7 +21,7 @@ const DEFAULT_QUERY = {};
 
 export const useSocket = (
   namespace: `/${string}`,
-  options: SocketOptions = {}
+  options: SocketOptions = {},
 ) => {
   const {
     query: customQuery = DEFAULT_QUERY,
@@ -43,7 +43,7 @@ export const useSocket = (
       token_source: "api",
       ...customQuery,
     }),
-    [apiKey, customQuery]
+    [apiKey, customQuery],
   );
 
   // EFFECTS ---------

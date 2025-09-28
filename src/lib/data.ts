@@ -6,7 +6,7 @@ import { MessageSenders, TicketStatus } from "@/utils/enums";
 export const getUserConversations = async (
   apiKey: string,
   sessionId: string,
-  filters: { status: TicketStatus }
+  filters: { status: TicketStatus },
 ) => {
   const response = await requestHandler(
     `/api/v1/helpdesk/customer/${sessionId}/conversations/?closed=${
@@ -17,7 +17,7 @@ export const getUserConversations = async (
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },
-    }
+    },
   );
 
   return response.data as ConversationType[];
@@ -36,7 +36,7 @@ export type GetTicketChatsResponse = DBResource & {
 export const getTicketChats = async (
   apiKey: string,
   sessionId: string,
-  chatId: ChatId
+  chatId: ChatId,
 ) => {
   const response = await requestHandler(
     `/api/v1/helpdesk/customer/${sessionId}/conversations/${chatId}/messages/`,
@@ -45,7 +45,7 @@ export const getTicketChats = async (
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },
-    }
+    },
   );
 
   return response.data as GetTicketChatsResponse;

@@ -46,7 +46,7 @@ const AppTabs: FC<Props> = ({ tabs, active, onChange }) => {
             onClick={() => onChange(tab)}
             className={cls(
               "relative text-medium-sm cursor-pointer transition-color duration-300 pb-1.5",
-              isActive ? "text-gray-900 " : "text-gray-400 "
+              isActive ? "text-gray-900 " : "text-gray-400 ",
             )}
           >
             {tab.label}

@@ -1,34 +1,34 @@
 @utility bg-brand-gradient {
-    @apply bg-gradient-to-r from-gold-500 to-red-500;
+  @apply bg-gradient-to-r from-gold-500 to-red-500;
 }
 
 @utility text-semibold-xl {
-    @apply font-semibold text-xl;
+  @apply font-semibold text-xl;
 }
 @utility text-semibold-base {
-    @apply font-semibold text-base;
+  @apply font-semibold text-base;
 }
 @utility text-semibold-sm {
-    @apply font-semibold text-sm;
+  @apply font-semibold text-sm;
 }
 @utility text-medium-base {
-    @apply font-medium text-base;
+  @apply font-medium text-base;
 }
 @utility text-medium-sm {
-    @apply font-medium text-sm;
+  @apply font-medium text-sm;
 }
 @utility text-medium-xs {
-    @apply font-medium text-xs;
+  @apply font-medium text-xs;
 }
 @utility text-medium-xxs {
-    @apply font-medium text-xxs;
+  @apply font-medium text-xxs;
 }
 @utility text-regular-sm {
-    @apply font-normal text-sm;
+  @apply font-normal text-sm;
 }
 @utility text-regular-xs {
-    @apply font-normal text-xs;
+  @apply font-normal text-xs;
 }
 @utility text-regular-xxs {
-    @apply font-normal text-xxs;
+  @apply font-normal text-xxs;
 }
