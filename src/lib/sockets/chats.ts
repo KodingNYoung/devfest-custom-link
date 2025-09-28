@@ -36,6 +36,17 @@ export const useChatSocket = (
     });
   }, [socket]);
 
+  const subscribeToChat = useCallback(
+    (chatId: ChatId) => {
+      if (!socket || !chatId || !isConnected) return;
+      const payload = {
+        ticket_chat_id: chatId,
+      };
+      socket.emit("enter_support", payload);
+    },
+    [socket, isConnected]
+  );
+
   const emitMessage = useCallback(
     (message: string) => {
       if (!socket || !isConnected) return;
@@ -85,5 +96,11 @@ export const useChatSocket = (
     [socket, isConnected, chatId]
   );
 
-  return { emitMessage, emitRead, emitCloseSupport, emitRateSupport };
+  return {
+    emitMessage,
+    emitRead,
+    emitCloseSupport,
+    emitRateSupport,
+    subscribeToChat,
+  };
 };

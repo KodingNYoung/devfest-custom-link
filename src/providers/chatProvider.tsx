@@ -4,8 +4,9 @@ import { useTicketChats } from "@/hooks/apiHooks";
 import { useChatNav } from "@/hooks/chat";
 import { useChatSocket } from "@/lib/sockets/chats";
 import { QUERY_FN_KEYS } from "@/utils/constants";
-import { MessageSenders } from "@/utils/enums";
+import { MessageSenders, TicketStatus } from "@/utils/enums";
 import {
+  ConversationType,
   FC,
   MessageType,
   SocketResponseType,
@@ -87,8 +88,12 @@ export const ChatContext = createContext<ChatContextProps>({
   closeTicket: () => {},
   rateTicket: () => {},
 });
+type ChatContextProviderProps = { conversations?: ConversationType[] };
 
-export const ChatContextProvider: FC = ({ children }) => {
+export const ChatContextProvider: FC<ChatContextProviderProps> = ({
+  children,
+  conversations,
+}) => {
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const queryClient = useQueryClient();
   const { sessionId } = useUserSession();
@@ -135,26 +140,37 @@ export const ChatContextProvider: FC = ({ children }) => {
 
   // socket event handlers
   const onmessage = (message: SocketResponseType) => {
-    if (message.data.ticket_chat_id) {
+    if (message.data.ticket_chat_id && chatId === NEW_CHAT_ID) {
       // if it's a new chat, set the chatId to the one received from the socket
       goToChat(message.data.ticket_chat_id);
     }
-    // refetch the chat to update responder, close support, and close status
-    setResponder(message.data.sender);
-    setIsClosed(Boolean(message.data.closed_support));
-    setShowCloseSupport(Boolean(message.data.close_support));
 
-    // emit read
-    emitRead(message.data.ticket_chat_id);
+    // if there's a current chat
+    if (ticketChatId) {
+      // emit read
+      emitRead(message.data.ticket_chat_id);
+      // refetch the chat to update responder, close support, and close status
+      setResponder(message.data.sender);
+      setIsClosed(Boolean(message.data.closed_support));
+      setShowCloseSupport(Boolean(message.data.close_support));
+      // update chat messages
+      updateMessages({
+        date_created: message.data.date_created,
+        date_updated: message.data.date_updated,
+        message: message.data.message,
+        sender: message.data.sender,
+        is_attachment: false, //TODO: confirm this -- is it always false? meaning sate or agent cannot reply with attachments?
+        ticket_chat: message.data.ticket_chat_id,
+      });
+    }
 
-    // update chat messages
-    updateMessages({
-      date_created: message.data.date_created,
-      date_updated: message.data.date_updated,
-      message: message.data.message,
-      sender: message.data.sender,
-      is_attachment: false, //TODO: confirm this -- is it always false? meaning sate or agent cannot reply with attachments?
-      ticket_chat: message.data.ticket_chat_id,
+    // refetch open conversations
+    queryClient.invalidateQueries({
+      queryKey: [
+        ...QUERY_FN_KEYS.CONVERSATIONS,
+        sessionId,
+        { status: TicketStatus.OPEN },
+      ],
     });
   };
   const oncloseticket = () => {
@@ -168,8 +184,13 @@ export const ChatContextProvider: FC = ({ children }) => {
     setTicketRating(data?.data?.rating);
   };
 
-  const { emitMessage, emitRead, emitCloseSupport, emitRateSupport } =
-    useChatSocket(ticketChatId, { onmessage, oncloseticket, onreviewticket });
+  const {
+    emitMessage,
+    emitRead,
+    emitCloseSupport,
+    emitRateSupport,
+    subscribeToChat,
+  } = useChatSocket(ticketChatId, { onmessage, oncloseticket, onreviewticket });
 
   // user actions
   const sendMessage = useCallback(
@@ -216,6 +237,12 @@ export const ChatContextProvider: FC = ({ children }) => {
 
     setMessages(data?.messages || []);
   }, [data]);
+  useEffect(() => {
+    if (!conversations) return;
+    conversations.forEach((conversation) => {
+      subscribeToChat(conversation?.id);
+    });
+  }, [conversations, subscribeToChat]);
 
   return (
     <ChatContext.Provider

@@ -11,6 +11,7 @@ const ActiveTickets: FC = () => {
   const { data: conversations = [], isLoading } = useConversations(
     TicketStatus.OPEN
   );
+
   return isLoading ? (
     <>loading conversation...</>
   ) : (

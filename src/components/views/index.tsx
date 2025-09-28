@@ -23,7 +23,7 @@ const Container: FC = () => {
           loading...
         </div>
       )}
-      <ChatContextProvider>
+      <ChatContextProvider conversations={openTickets}>
         {!(loadingOpenTickets || loadingClosedTickets) ? (
           chatId || (!openTickets?.length && !closedTickets?.length) ? (
             <Chat />
