@@ -1,7 +1,7 @@
 services:
   # Next.js Application
-  app-fe:
-    container_name: app-fe
+  sdk:
+    container_name: sdk
     build:
       context: .
       dockerfile: production.Dockerfile
