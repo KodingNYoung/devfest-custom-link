@@ -9,13 +9,13 @@ services:
         NODE_ENV: production
         NEXT_PUBLIC_BACKEND_ENDPOINT_URL: ${NEXT_PUBLIC_BACKEND_ENDPOINT_URL}
     ports:
-      - 3000:3000
+      - 3001:3000
     deploy:
       resources:
         limits:
-          memory: 2.5G
+          memory: 1G
         reservations:
-          memory: 1.5G
+          memory: 512M
 
 networks:
   default:
