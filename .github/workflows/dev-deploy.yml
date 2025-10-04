@@ -2,7 +2,7 @@ name: Deploy to Eusate VM
 on:
   push:
     branches:
-      - main
+      - develop
 
 jobs:
   deploy:
@@ -21,7 +21,7 @@ jobs:
           ENV_FILE_B64=$(echo "$ENV_FILE" | base64 -w 0)
           sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@104.248.165.115 << EOF
             set -e
-            cd /home/eusate/eusate-fe
+            cd /home/eusate/eusate-chatbot-core
             GIT_SSH_COMMAND="ssh -i /root/.ssh/id_rsa2" git fetch origin $BRANCH_NAME
             GIT_SSH_COMMAND="ssh -i /root/.ssh/id_rsa2" git checkout $BRANCH_NAME
             GIT_SSH_COMMAND="ssh -i /root/.ssh/id_rsa2" git pull origin $BRANCH_NAME
