@@ -3,6 +3,25 @@ import { requestHandler } from "./request";
 import { ChatId } from "@/providers/chatProvider";
 import { MessageSenders, TicketStatus } from "@/utils/enums";
 
+export const verifyAPIKey = async (apiKey: string) => {
+  try {
+    const response = await requestHandler(
+      `/api/v1/organisations/verify-apikey/`,
+      undefined,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      },
+    );
+    if (!response.data.success) throw new Error();
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export const getUserConversations = async (
   apiKey: string,
   sessionId: string,

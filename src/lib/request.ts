@@ -1,5 +1,5 @@
 import { API_BASEURL } from "@/utils/constants";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { cache } from "react";
 
 type FetcherOptions = {
@@ -33,7 +33,13 @@ export const requestHandler = cache(
     try {
       return await axios(requestOptions);
     } catch (err) {
-      throw err;
+      let message;
+      if (err instanceof AxiosError) {
+        message = err?.response?.data?.detail;
+      } else {
+        message = (err as Error).message;
+      }
+      return { data: { success: false, message } };
     }
   },
 );
