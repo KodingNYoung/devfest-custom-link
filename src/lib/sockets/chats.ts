@@ -1,4 +1,4 @@
-import { ChatId } from "@/providers/chatProvider";
+import { ChatId, OpenedChat } from "@/providers/chatProvider";
 import { useUserSession } from "@/providers/sessionProvider";
 import { MessageSenders } from "@/utils/enums";
 import {
@@ -8,13 +8,17 @@ import {
 } from "@/utils/types";
 import { useCallback, useEffect } from "react";
 import { useSocket } from ".";
+import { isActualChat, isNewChat } from "@/utils/helpers";
 
 export const useChatSocket = (
-  chatId: ChatId | null,
+  chatId: OpenedChat,
   cb?: {
-    onmessage?: (message: SocketResponseType) => void;
-    oncloseticket?: (message: SocketResponseType) => void;
-    onreviewticket?: (message: TicketRatingSocketResponse) => void;
+    onmessage?: (message: SocketResponseType, chatId: OpenedChat) => void;
+    oncloseticket?: (message: SocketResponseType, chatId: OpenedChat) => void;
+    onreviewticket?: (
+      message: TicketRatingSocketResponse,
+      chatId: OpenedChat,
+    ) => void;
   },
 ) => {
   const { onmessage, oncloseticket, onreviewticket } = cb || {};
@@ -23,22 +27,34 @@ export const useChatSocket = (
   const { socket, isConnected } = useSocket(`/helpdesk`);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !chatId) return;
 
     socket.on("support", (data: SocketResponseType) => {
-      if (onmessage) onmessage(data);
+      if (
+        onmessage &&
+        (chatId === data?.data?.ticket_chat_id || isNewChat(chatId))
+      )
+        onmessage(data, chatId);
     });
     socket.on("close_support", (data: SocketResponseType) => {
-      if (oncloseticket) oncloseticket(data);
+      if (
+        oncloseticket &&
+        (chatId === data?.data?.ticket_chat_id || isNewChat(chatId))
+      )
+        oncloseticket(data, chatId);
     });
     socket.on("review_support", (data: TicketRatingSocketResponse) => {
-      if (onreviewticket) onreviewticket(data);
+      if (
+        onreviewticket &&
+        (chatId === data?.data?.ticket_chat_id || isNewChat(chatId))
+      )
+        onreviewticket(data, chatId);
     });
-  }, [socket]);
+  }, [socket, chatId]);
 
   const subscribeToChat = useCallback(
-    (chatId: ChatId) => {
-      if (!socket || !chatId || !isConnected) return;
+    (chatId: ChatId | null) => {
+      if (!socket || !isActualChat(chatId) || !isConnected) return;
       const payload = {
         ticket_chat_id: chatId,
       };
@@ -53,7 +69,7 @@ export const useChatSocket = (
       const payload = {
         message,
         attachment: false,
-        ticket_chat_id: chatId,
+        ticket_chat_id: isActualChat(chatId) ? chatId : null,
         session_id: sessionId,
       } as SocketRequestMessageType;
 
@@ -65,7 +81,7 @@ export const useChatSocket = (
   );
 
   const emitRead = useCallback(
-    (chatId: ChatId | null) => {
+    (chatId: OpenedChat) => {
       if (!socket || !chatId || !isConnected) return;
       const payload = {
         ticket_chat_id: chatId,

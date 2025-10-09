@@ -1,3 +1,4 @@
+import { ChatId, NEW_CHAT_ID, OpenedChat } from "@/providers/chatProvider";
 import { TWClassNames } from "@/utils/types";
 import dayjs from "dayjs";
 import calendar from "dayjs/plugin/calendar";
@@ -20,4 +21,14 @@ export const formatToMessageTime = (date: string) => {
     lastWeek: "dddd, h:mmA", // Last week ( Last Monday at 2:30 AM )
     sameElse: "DD/MM/YYYY, h:mmA ", // Everything else ( 7/10/2011 )
   });
+};
+
+export const isNewChat = (chatId: ChatId) => chatId === NEW_CHAT_ID;
+export const isActualChat = (chatId: OpenedChat) =>
+  !!chatId && !isNewChat(chatId);
+
+export const logger = (...args: unknown[]) => {
+  if (process.env.NODE_ENV !== "production") {
+    console.log(...args, {});
+  }
 };

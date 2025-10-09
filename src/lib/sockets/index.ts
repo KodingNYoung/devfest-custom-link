@@ -1,5 +1,6 @@
 import { useUserSession } from "@/providers/sessionProvider";
 import { API_BASEURL } from "@/utils/constants";
+import { logger } from "@/utils/helpers";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -73,7 +74,7 @@ export const useSocket = (
 
     // events
     socket.on("disconnect", (reason) => {
-      console.log(reason);
+      logger(reason);
       setIsConnected(false);
       if (events?.disconnect) events.disconnect(reason, socket);
     });
@@ -81,7 +82,7 @@ export const useSocket = (
       setIsConnected(true);
       if (events?.connect) events.connect(socket);
     });
-    socket.on("connect_error", (data) => console.log(data));
+    socket.on("connect_error", (data) => logger(data));
 
     return () => {
       if (connectionId === connectionAttemptsRef.current) {

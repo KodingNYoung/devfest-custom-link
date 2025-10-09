@@ -19,14 +19,15 @@ import {
   RefObject,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import { useUserSession } from "./sessionProvider";
 import { v4 as uuidV4 } from "uuid";
+import { isActualChat, isNewChat } from "@/utils/helpers";
 
 export type ChatId = string;
+export type OpenedChat = ChatId | null;
 export const NEW_CHAT_ID = "new_chat_id";
 type ChatNavContextProps = {
   chatId: ChatId | null;
@@ -43,7 +44,7 @@ export const ChatNavContext = createContext<ChatNavContextProps>({
 });
 
 export const ChatNavContextProvider: FC = ({ children }) => {
-  const [openedChat, setOpenedChat] = useState<ChatId | null>(null);
+  const [openedChat, setOpenedChat] = useState<OpenedChat>(null);
 
   const goToChat = (chat: ChatId) => setOpenedChat(chat);
   const openNewChat = () => setOpenedChat(NEW_CHAT_ID);
@@ -108,12 +109,7 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
   const [showCloseSupport, setShowCloseSupport] = useState(false);
   const [ticketRating, setTicketRating] = useState<number | null>(null);
 
-  const ticketChatId = useMemo(
-    () => (chatId === NEW_CHAT_ID ? null : chatId),
-    [chatId],
-  );
-
-  const { data, isLoading } = useTicketChats(ticketChatId);
+  const { data, isLoading } = useTicketChats(chatId);
 
   //   functions
   const scrollToBottom = useCallback(
@@ -139,22 +135,23 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
   );
 
   // socket event handlers
-  const onmessage = (message: SocketResponseType) => {
-    console.log({ message, chatId, ticketChatId });
+  const onmessage = (message: SocketResponseType, chatId: OpenedChat) => {
+    if (chatId) {
+      if (message.data.ticket_chat_id && isNewChat(chatId)) {
+        // if it's a new chat, set the chatId to the one received from the socket
+        goToChat(message.data.ticket_chat_id);
+      }
 
-    if (message.data.ticket_chat_id && chatId === NEW_CHAT_ID) {
-      // if it's a new chat, set the chatId to the one received from the socket
-      goToChat(message.data.ticket_chat_id);
-    }
+      // if there's a current actual chat
+      if (isActualChat(chatId)) {
+        // emit read
+        emitRead(message.data.ticket_chat_id);
+        // refetch the chat to update responder, close support, and close status
+        setResponder(message.data.sender);
+        setIsClosed(Boolean(message.data.closed_support));
+        setShowCloseSupport(Boolean(message.data.close_support));
+      }
 
-    // if there's a current chat
-    if (ticketChatId) {
-      // emit read
-      emitRead(message.data.ticket_chat_id);
-      // refetch the chat to update responder, close support, and close status
-      setResponder(message.data.sender);
-      setIsClosed(Boolean(message.data.closed_support));
-      setShowCloseSupport(Boolean(message.data.close_support));
       // update chat messages
       updateMessages({
         date_created: message.data.date_created,
@@ -164,8 +161,11 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
         is_attachment: false, //TODO: confirm this -- is it always false? meaning sate or agent cannot reply with attachments?
         ticket_chat: message.data.ticket_chat_id,
       });
+      // invalidate the current chat so the async state is updated
+      queryClient.invalidateQueries({
+        queryKey: [...QUERY_FN_KEYS.TICKET_CHAT, sessionId, chatId],
+      });
     }
-
     // refetch open conversations
     queryClient.invalidateQueries({
       queryKey: [
@@ -179,7 +179,18 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
     setShowCloseSupport(false);
     setIsClosed(true);
     queryClient.invalidateQueries({
-      queryKey: QUERY_FN_KEYS.CONVERSATIONS,
+      queryKey: [
+        ...QUERY_FN_KEYS.CONVERSATIONS,
+        sessionId,
+        { status: TicketStatus.OPEN },
+      ],
+    });
+    queryClient.invalidateQueries({
+      queryKey: [
+        ...QUERY_FN_KEYS.CONVERSATIONS,
+        sessionId,
+        { status: TicketStatus.CLOSED },
+      ],
     });
   };
   const onreviewticket = (data: TicketRatingSocketResponse) => {
@@ -192,7 +203,7 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
     emitCloseSupport,
     emitRateSupport,
     subscribeToChat,
-  } = useChatSocket(ticketChatId, { onmessage, oncloseticket, onreviewticket });
+  } = useChatSocket(chatId, { onmessage, oncloseticket, onreviewticket });
 
   // user actions
   const sendMessage = useCallback(
@@ -214,21 +225,21 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
     [emitMessage, chatId, updateMessages],
   );
   const readChat = useCallback(() => {
-    if (!ticketChatId) return;
-    emitRead(ticketChatId);
+    if (!isActualChat(chatId)) return;
+    emitRead(chatId);
     // invalid conversations
     queryClient.invalidateQueries({
       queryKey: [...QUERY_FN_KEYS.CONVERSATIONS, sessionId],
     });
-  }, [ticketChatId, emitRead, queryClient, sessionId]);
+  }, [chatId, emitRead, queryClient, sessionId]);
   const closeTicket = useCallback(() => {
     emitCloseSupport();
-  }, [ticketChatId, emitCloseSupport]);
+  }, [chatId, emitCloseSupport]);
   const rateTicket = useCallback(
     (rating: number) => {
       emitRateSupport(rating);
     },
-    [ticketChatId, emitRateSupport],
+    [chatId, emitRateSupport],
   );
 
   useEffect(() => {
@@ -238,13 +249,18 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
     setTicketRating(data?.rating || null);
 
     setMessages(data?.messages || []);
+
+    if (data?.id) {
+      subscribeToChat(data?.id);
+      emitRead(data?.id);
+    }
   }, [data]);
   useEffect(() => {
     if (!conversations) return;
     conversations.forEach((conversation) => {
       subscribeToChat(conversation?.id);
     });
-  }, [conversations, subscribeToChat]);
+  }, [conversations?.length, subscribeToChat]);
 
   return (
     <ChatContext.Provider
