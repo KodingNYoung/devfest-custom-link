@@ -140,6 +140,8 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
 
   // socket event handlers
   const onmessage = (message: SocketResponseType) => {
+    console.log({ message, chatId, ticketChatId });
+
     if (message.data.ticket_chat_id && chatId === NEW_CHAT_ID) {
       // if it's a new chat, set the chatId to the one received from the socket
       goToChat(message.data.ticket_chat_id);
