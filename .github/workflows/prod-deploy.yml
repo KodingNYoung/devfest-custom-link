@@ -7,20 +7,20 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
-          
+
       - name: Add known hosts
         env:
           SERVER_IP: ${{ secrets.SERVER_IP_PROD }}
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
-          
+
       - name: Deploy to server
         env:
           BRANCH_NAME: ${{ github.ref_name }}
@@ -30,7 +30,7 @@ jobs:
         run: |
           echo "Deploying branch: $BRANCH_NAME to $SERVER_IP"
           ENV_FILE_B64=$(echo "$ENV_FILE" | base64 -w 0)
-          
+
           ssh ${SSH_USER}@${SERVER_IP} << EOF
             set -e
             cd /home/eusate/eusate-chatbot-core

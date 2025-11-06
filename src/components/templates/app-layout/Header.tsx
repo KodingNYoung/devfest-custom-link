@@ -3,7 +3,6 @@
 import { FC } from "@/utils/types";
 import Icon from "@/components/atoms/Icon";
 import CloseBtn from "@/components/templates/app-layout/_components/CloseBtn";
-import CallBtn from "./_components/CallBtn";
 import { AnimatePresence } from "motion/react";
 import BackBtn from "./_components/BackBtn";
 import { useChatNav } from "@/hooks/chat";
@@ -22,9 +21,7 @@ const Header: FC = () => {
         <span className="text-semibold-sm text-white">Eusate</span>
       </div>
       <span className="flex-1" />
-      <AnimatePresence>
-        {isConversationsScreen ? <CloseBtn /> : <CallBtn />}
-      </AnimatePresence>
+      <AnimatePresence>{isConversationsScreen && <CloseBtn />}</AnimatePresence>
     </header>
   );
 };
