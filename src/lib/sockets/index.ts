@@ -1,5 +1,4 @@
-import { useUserSession } from "@/providers/sessionProvider";
-import { API_BASEURL } from "@/utils/constants";
+import { API_BASEURL, API_KEY } from "@/utils/constants";
 import { logger } from "@/utils/helpers";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
@@ -31,8 +30,6 @@ export const useSocket = (
     events,
   } = options;
 
-  const { apiKey } = useUserSession();
-
   const connectionAttemptsRef = useRef(0);
   const socketRef = useRef<Socket | null>(null);
 
@@ -40,18 +37,18 @@ export const useSocket = (
 
   const query = useMemo(
     () => ({
-      token: apiKey,
+      token: API_KEY,
       token_source: "api",
       ...customQuery,
     }),
-    [apiKey, customQuery],
+    [API_KEY, customQuery],
   );
 
   // EFFECTS ---------
   useEffect(() => {
     const connectionId = ++connectionAttemptsRef.current;
 
-    if (!apiKey) return;
+    if (!API_KEY) return;
 
     // clean up any existing connections
     if (socketRef.current?.connected) {
@@ -92,12 +89,12 @@ export const useSocket = (
         setIsConnected(false);
       }
     };
-  }, [apiKey, autoConnect, transports, query, events]);
+  }, [API_KEY, autoConnect, transports, query, events]);
 
   useEffect(() => {
-    if (socketRef.current && apiKey) {
+    if (socketRef.current && API_KEY) {
       socketRef.current.io.opts.query = {
-        token: apiKey,
+        token: API_KEY,
         token_source: "api",
         ...customQuery,
       };
@@ -109,7 +106,7 @@ export const useSocket = (
       socketRef.current.connect();
       setIsConnected(true);
     }
-  }, [apiKey, customQuery]);
+  }, [API_KEY, customQuery]);
 
   return {
     isConnected,

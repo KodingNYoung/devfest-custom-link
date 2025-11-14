@@ -7,7 +7,7 @@ import Footer from "@/components/templates/app-layout/Footer";
 
 const AppLayout: FC = ({ children }) => {
   return (
-    <div className="flex flex-col h-full bg-black">
+    <div className="flex flex-col h-full bg-gdg-blue">
       <Header />
       <div className="flex-1 bg-white rounded-t-[20px] flex flex-col h-[calc(100%_-_88px)] whitespace-break-spaces relative">
         {children}

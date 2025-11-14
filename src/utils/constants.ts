@@ -1,4 +1,5 @@
 export const API_BASEURL = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT_URL;
+export const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 export const ROUTES = {
   CONVERSATIONS: "/",

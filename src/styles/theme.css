@@ -81,6 +81,9 @@
   /*black*/
   --color-black: #0a0a0a;
   --color-transparent: transparent;
+  /* gdg colors */
+  --color-gdg-blue: #4285f4;
+  --color-gdg-guest-chat-bg: #edf4ff;
 
   /* ******************* FONT **************** */
   /* FAMILY */

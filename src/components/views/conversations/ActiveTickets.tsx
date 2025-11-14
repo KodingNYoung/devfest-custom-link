@@ -22,7 +22,7 @@ const ActiveTickets: FC = () => {
       />
       {conversations.length < 3 && (
         <button
-          className="flex items-center justify-center gap-1.5 bg-black rounded-full text-white !leading-none cursor-pointer opacity-80 hover:opacity-100 p-2.5 transition-opacity duration-200 active:opacity-90"
+          className="flex items-center justify-center gap-1.5 bg-gdg-blue rounded-full text-white !leading-none cursor-pointer opacity-80 hover:opacity-100 p-2.5 transition-opacity duration-200 active:opacity-90"
           onClick={openNewChat}
         >
           <Icon name="icon-plus" size={18} />

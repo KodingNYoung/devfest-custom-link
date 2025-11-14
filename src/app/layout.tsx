@@ -17,10 +17,7 @@ export const metadata: Metadata = {
 
 const RootLayout: LayoutFC = ({ children }) => {
   return (
-    <html
-      lang="en"
-      className={cls("h-full max-h-[780px]", plusJakartaSans.variable)}
-    >
+    <html lang="en" className={cls("h-full", plusJakartaSans.variable)}>
       <body>
         <ReactQueryProvider>
           <ChatNavContextProvider>{children}</ChatNavContextProvider>

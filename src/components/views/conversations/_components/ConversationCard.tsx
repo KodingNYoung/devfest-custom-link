@@ -56,7 +56,7 @@ const ConversationCard: FC<Props> = ({ conversation }) => {
           </span>
           <span className="flex-1" />
           {!conversation.read_by_customer && (
-            <span className="size-3 min-w-3 min-h-3 bg-brand-gradient text-white rounded-full flex items-center justify-center text-medium-xs" />
+            <span className="size-3 min-w-3 min-h-3 bg-gdg-blue text-white rounded-full flex items-center justify-center text-medium-xs" />
           )}
           <Icon
             name="icon-chevron-down"

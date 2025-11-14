@@ -39,7 +39,7 @@ const ChatFooter: FC = () => {
       />
       <button
         type="submit"
-        className="size-10 min-h-10 min-w-10 bg-black rounded-full text-white !leading-none cursor-pointer opacity-70 hover:opacity-100 active:opacity-80"
+        className="size-10 min-h-10 min-w-10 bg-gdg-blue rounded-full text-white !leading-none cursor-pointer opacity-70 hover:opacity-100 active:opacity-80"
       >
         <Icon name="icon-send-2" size={18} />
       </button>
