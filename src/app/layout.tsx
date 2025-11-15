@@ -8,11 +8,9 @@ import { ChatNavContextProvider } from "@/providers/chatProvider";
 import ReactQueryProvider from "@/providers/reactQueryProvider";
 
 export const metadata: Metadata = {
-  title: {
-    default: "eusate chatbot",
-    template: "%s | eusate",
-  },
-  description: "Supercharge your customer support with our AI powered agents",
+  title: "DevfestAkure Help",
+  description:
+    "Your AI companion for DevFest Akure 2025. Get instant answers about schedules, speakers, venue, and registration. Powered by SATE from Eusate.",
 };
 
 const RootLayout: LayoutFC = ({ children }) => {
