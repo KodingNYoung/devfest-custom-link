@@ -17,13 +17,21 @@ const Container: FC = () => {
     useConversations(TicketStatus.CLOSED);
 
   useEffect(() => {
+    if (loadingClosedTickets || loadingOpenTickets) return;
+
     if (chatId === null && !openTickets?.length && !closedTickets?.length) {
       openNewChat();
     }
-  }, [closedTickets, openTickets, chatId]);
+  }, [
+    closedTickets,
+    openTickets,
+    chatId,
+    loadingClosedTickets,
+    loadingClosedTickets,
+  ]);
 
   return (
-    <AppLayout>
+    <AppLayout hasNoChat={!(openTickets?.length || closedTickets?.length)}>
       {(loadingOpenTickets || loadingClosedTickets) && (
         <div className="h-full w-full flex item-center justify-center">
           loading...

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "../styles/globals.css";
 import React from "react";
 import { cls } from "@/utils/helpers";
@@ -12,11 +12,16 @@ export const metadata: Metadata = {
   description:
     "Your AI companion for DevFest Akure 2025. Get instant answers about schedules, speakers, venue, and registration. Powered by SATE from Eusate.",
 };
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  interactiveWidget: "resizes-content",
+};
 
 const RootLayout: LayoutFC = ({ children }) => {
   return (
     <html lang="en" className={cls("h-full", plusJakartaSans.variable)}>
-      <body>
+      <body className="max-w-2xl mx-auto bg-gray-50">
         <ReactQueryProvider>
           <ChatNavContextProvider>{children}</ChatNavContextProvider>
         </ReactQueryProvider>
