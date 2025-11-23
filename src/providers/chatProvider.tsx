@@ -25,6 +25,7 @@ import {
 import { useUserSession } from "./sessionProvider";
 import { v4 as uuidV4 } from "uuid";
 import { isActualChat, isNewChat } from "@/utils/helpers";
+import { useParams, useRouter } from "next/navigation";
 
 export type ChatId = string;
 export type OpenedChat = ChatId | null;
@@ -44,15 +45,21 @@ export const ChatNavContext = createContext<ChatNavContextProps>({
 });
 
 export const ChatNavContextProvider: FC = ({ children }) => {
-  const [openedChat, setOpenedChat] = useState<OpenedChat>(null);
+  const params = useParams<{ chatId: ChatId }>();
+  const { push, back } = useRouter();
 
-  const goToChat = (chat: ChatId) => setOpenedChat(chat);
-  const openNewChat = () => setOpenedChat(NEW_CHAT_ID);
-  const backToConversations = () => setOpenedChat(null);
+  const goToChat = (chat: ChatId) => push(`/${chat}`);
+  const openNewChat = () => push(`/${NEW_CHAT_ID}`);
+  const backToConversations = () => back();
 
   return (
     <ChatNavContext.Provider
-      value={{ chatId: openedChat, goToChat, backToConversations, openNewChat }}
+      value={{
+        chatId: params.chatId || null,
+        goToChat,
+        backToConversations,
+        openNewChat,
+      }}
     >
       {children}
     </ChatNavContext.Provider>

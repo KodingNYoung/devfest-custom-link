@@ -4,8 +4,8 @@ import React from "react";
 import { cls } from "@/utils/helpers";
 import { plusJakartaSans } from "@/assets/font";
 import { LayoutFC } from "@/utils/types";
-import { ChatNavContextProvider } from "@/providers/chatProvider";
-import ReactQueryProvider from "@/providers/reactQueryProvider";
+import Providers from "@/providers";
+import AppLayout from "@/components/templates/app-layout";
 
 export const metadata: Metadata = {
   title: "DevfestAkure Help",
@@ -22,9 +22,9 @@ const RootLayout: LayoutFC = ({ children }) => {
   return (
     <html lang="en" className={cls("h-full", plusJakartaSans.variable)}>
       <body className="max-w-2xl mx-auto bg-gray-50">
-        <ReactQueryProvider>
-          <ChatNavContextProvider>{children}</ChatNavContextProvider>
-        </ReactQueryProvider>
+        <Providers>
+          <AppLayout>{children}</AppLayout>
+        </Providers>
       </body>
     </html>
   );
