@@ -1,5 +1,5 @@
+import { GDGLogo } from "@/assets/svg";
 import ChatLoader from "@/components/atoms/ChatLoader";
-import Icon from "@/components/atoms/Icon";
 import { cls, formatToMessageTime } from "@/utils/helpers";
 import { FC, MessageType } from "@/utils/types";
 import React from "react";
@@ -12,8 +12,8 @@ type Props = {
 const GuestMessageBox: FC<Props> = ({ typing, message }) => {
   return (
     <section className="flex gap-1.5 items-end w-[80%] max-w-[230px]">
-      <div className="size-7 min-h-7 min-w-7 flex justify-center items-center rounded-full bg-black text-white">
-        <Icon name="icon-eusate" size={12} />
+      <div className="size-7 min-h-7 min-w-7 flex justify-center items-center rounded-full bg-black p-1">
+        {GDGLogo}
       </div>
       <div
         className={cls(

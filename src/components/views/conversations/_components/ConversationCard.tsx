@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import { useChatNav } from "@/hooks/chat";
+import { GDGLogo } from "@/assets/svg";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -26,8 +27,8 @@ const ConversationCard: FC<Props> = ({ conversation }) => {
       }}
       className="border border-gray-50 w-full p-2.5 rounded-xl flex items-start gap-2 cursor-pointer"
     >
-      <div className="size-6 min-h-6 min-w-6 flex justify-center items-center rounded-full bg-black text-white">
-        <Icon name="icon-eusate" size={9} />
+      <div className="size-6 min-h-6 min-w-6 flex justify-center items-center rounded-full bg-black p-1">
+        {GDGLogo}
       </div>
       <div className="flex flex-col gap-1 flex-1 w-[calc(100%_-_44px)]">
         <div className="flex items-center justify-between">
@@ -52,7 +53,12 @@ const ConversationCard: FC<Props> = ({ conversation }) => {
               : conversation.latest_message.sender === MessageSenders.SATE
                 ? "Sate: "
                 : "Agent: "}{" "}
-            {conversation.latest_message.message}
+            <span
+              className="*:!font-normal"
+              dangerouslySetInnerHTML={{
+                __html: conversation.latest_message.message,
+              }}
+            />
           </span>
           <span className="flex-1" />
           {!conversation.read_by_customer && (

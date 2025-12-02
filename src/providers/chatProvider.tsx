@@ -6,7 +6,6 @@ import { useChatSocket } from "@/lib/sockets/chats";
 import { QUERY_FN_KEYS } from "@/utils/constants";
 import { MessageSenders, TicketStatus } from "@/utils/enums";
 import {
-  ConversationType,
   FC,
   MessageType,
   SocketResponseType,
@@ -25,13 +24,14 @@ import {
 import { useUserSession } from "./sessionProvider";
 import { v4 as uuidV4 } from "uuid";
 import { isActualChat, isNewChat } from "@/utils/helpers";
+import { useParams, useRouter } from "next/navigation";
 
 export type ChatId = string;
 export type OpenedChat = ChatId | null;
 export const NEW_CHAT_ID = "new_chat_id";
 type ChatNavContextProps = {
   chatId: ChatId | null;
-  goToChat: (chatId: ChatId) => void;
+  goToChat: (chatId: ChatId, disallowLoad?: number) => void;
   backToConversations: () => void;
   openNewChat: () => void;
 };
@@ -44,15 +44,22 @@ export const ChatNavContext = createContext<ChatNavContextProps>({
 });
 
 export const ChatNavContextProvider: FC = ({ children }) => {
-  const [openedChat, setOpenedChat] = useState<OpenedChat>(null);
+  const params = useParams<{ chatId: ChatId }>();
+  const { push, replace } = useRouter();
 
-  const goToChat = (chat: ChatId) => setOpenedChat(chat);
-  const openNewChat = () => setOpenedChat(NEW_CHAT_ID);
-  const backToConversations = () => setOpenedChat(null);
+  const goToChat = (chat: ChatId, disallowLoad: number = 0) =>
+    disallowLoad ? push(`/${chat}?dl=${disallowLoad}`) : push(`/${chat}`);
+  const openNewChat = () => push(`/${NEW_CHAT_ID}`);
+  const backToConversations = () => replace("/");
 
   return (
     <ChatNavContext.Provider
-      value={{ chatId: openedChat, goToChat, backToConversations, openNewChat }}
+      value={{
+        chatId: params.chatId || null,
+        goToChat,
+        backToConversations,
+        openNewChat,
+      }}
     >
       {children}
     </ChatNavContext.Provider>
@@ -89,12 +96,8 @@ export const ChatContext = createContext<ChatContextProps>({
   closeTicket: () => {},
   rateTicket: () => {},
 });
-type ChatContextProviderProps = { conversations?: ConversationType[] };
 
-export const ChatContextProvider: FC<ChatContextProviderProps> = ({
-  children,
-  conversations,
-}) => {
+export const ChatContextProvider: FC = ({ children }) => {
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const queryClient = useQueryClient();
   const { sessionId } = useUserSession();
@@ -139,18 +142,16 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
     if (chatId) {
       if (message.data.ticket_chat_id && isNewChat(chatId)) {
         // if it's a new chat, set the chatId to the one received from the socket
-        goToChat(message.data.ticket_chat_id);
+        goToChat(message.data.ticket_chat_id, 1);
       }
 
       // if there's a current actual chat
-      if (isActualChat(chatId)) {
-        // emit read
-        emitRead(message.data.ticket_chat_id);
-        // refetch the chat to update responder, close support, and close status
-        setResponder(message.data.sender);
-        setIsClosed(Boolean(message.data.closed_support));
-        setShowCloseSupport(Boolean(message.data.close_support));
-      }
+      // emit read
+      emitRead(message.data.ticket_chat_id);
+      // refetch the chat to update responder, close support, and close status
+      setResponder(message.data.sender);
+      setIsClosed(Boolean(message.data.closed_support));
+      setShowCloseSupport(Boolean(message.data.close_support));
 
       // update chat messages
       updateMessages({
@@ -166,14 +167,6 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
         queryKey: [...QUERY_FN_KEYS.TICKET_CHAT, sessionId, chatId],
       });
     }
-    // refetch open conversations
-    queryClient.invalidateQueries({
-      queryKey: [
-        ...QUERY_FN_KEYS.CONVERSATIONS,
-        sessionId,
-        { status: TicketStatus.OPEN },
-      ],
-    });
   };
   const oncloseticket = () => {
     setShowCloseSupport(false);
@@ -255,18 +248,12 @@ export const ChatContextProvider: FC<ChatContextProviderProps> = ({
       emitRead(data?.id);
     }
   }, [data]);
-  useEffect(() => {
-    if (!conversations) return;
-    conversations.forEach((conversation) => {
-      subscribeToChat(conversation?.id);
-    });
-  }, [conversations?.length, subscribeToChat]);
 
   return (
     <ChatContext.Provider
       value={{
         messages,
-        isLoading: Boolean(isLoading),
+        isLoading,
         scrollRef: chatScrollRef,
         responder,
         isClosed: isClosed,
