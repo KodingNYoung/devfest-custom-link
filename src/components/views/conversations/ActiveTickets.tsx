@@ -5,6 +5,7 @@ import React from "react";
 import Icon from "@/components/atoms/Icon";
 import { TicketStatus } from "@/utils/enums";
 import TicketsList from "./_components/TicketsList";
+import Spinner from "@/components/atoms/Spinner";
 
 const ActiveTickets: FC = () => {
   const { openNewChat } = useChatNav();
@@ -13,7 +14,9 @@ const ActiveTickets: FC = () => {
   );
 
   return isLoading ? (
-    <>loading conversation...</>
+    <div className="h-full w-full bg-white flex justify-center items-center py-8">
+      <Spinner className="h-[unset]" />
+    </div>
   ) : (
     <>
       <TicketsList

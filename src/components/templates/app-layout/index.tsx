@@ -8,24 +8,34 @@ import { useChatNav } from "@/hooks/chat";
 import { useConversations } from "@/hooks/apiHooks";
 import { TicketStatus } from "@/utils/enums";
 import Spinner from "@/components/atoms/Spinner";
+import { useChatSocket } from "@/lib/sockets/chats";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_FN_KEYS } from "@/utils/constants";
+import { useUserSession } from "@/providers/sessionProvider";
 
 const AppLayout: FC = ({ children }) => {
+  const queryClient = useQueryClient();
+  const { sessionId } = useUserSession();
   const { chatId, openNewChat } = useChatNav();
+
   const { data: openTickets, isLoading: loadingOpenTickets } = useConversations(
     TicketStatus.OPEN,
   );
   const { data: closedTickets, isLoading: loadingClosedTickets } =
     useConversations(TicketStatus.CLOSED);
+  const { subscribeToChat } = useChatSocket(null, {
+    onmessage: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          ...QUERY_FN_KEYS.CONVERSATIONS,
+          sessionId,
+          { status: TicketStatus.OPEN },
+        ],
+      });
+    },
+  });
 
   useEffect(() => {
-    console.log({
-      loadingClosedTickets,
-      loadingOpenTickets,
-      chatId,
-      noChatId: chatId === null,
-      noOfOpenTickets: openTickets,
-      noOfClosedTickets: closedTickets,
-    });
     if (
       loadingClosedTickets ||
       !closedTickets ||
@@ -44,6 +54,14 @@ const AppLayout: FC = ({ children }) => {
     loadingClosedTickets,
     loadingClosedTickets,
   ]);
+
+  useEffect(() => {
+    if (!openTickets) return;
+    // remove this and move it to the openTickets screen
+    openTickets.forEach((conversation) => {
+      subscribeToChat(conversation?.id);
+    });
+  }, [openTickets?.length, subscribeToChat]);
 
   return (
     <div className="flex flex-col h-full bg-gdg-blue">

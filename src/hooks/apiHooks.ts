@@ -13,7 +13,7 @@ export const useConversations = (status: TicketStatus) => {
     queryKey: [...QUERY_FN_KEYS.CONVERSATIONS, sessionId, { status }],
     queryFn: async () => await getUserConversations(sessionId, { status }),
     enabled: Boolean(sessionId),
-    staleTime: 5 * 60 * 1000, // 5mins
+    staleTime: 1 * 60 * 1000, // 1mins
   });
 
   return result;

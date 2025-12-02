@@ -1,4 +1,4 @@
-import Icon from "@/components/atoms/Icon";
+import { GDGLogo } from "@/assets/svg";
 import { useChat } from "@/hooks/chat";
 import { FC } from "@/utils/types";
 import React from "react";
@@ -9,7 +9,7 @@ const EndChatMessage: FC = () => {
     <>
       <section className="flex gap-1.5 items-end w-[80%] max-w-[230px]">
         <div className="size-7 min-h-7 min-w-7 flex justify-center items-center rounded-full bg-black text-white">
-          <Icon name="icon-eusate" size={12} />
+          {GDGLogo}
         </div>
         <div className="bg-gold-50 w-fit min-w-[100px] rounded-xl px-2 grid gap-3 py-2">
           <p className="text-medium-xs text-gray-900">
