@@ -6,7 +6,7 @@ import { plusJakartaSans } from "@/assets/font";
 import { LayoutFC } from "@/utils/types";
 import { ChatNavContextProvider } from "@/providers/chatProvider";
 import ReactQueryProvider from "@/providers/reactQueryProvider";
-import { GoogleTagManager } from "@next/third-parties/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: "DevfestAkure Help",
@@ -22,7 +22,7 @@ export const viewport: Viewport = {
 const RootLayout: LayoutFC = ({ children }) => {
   return (
     <html lang="en" className={cls("h-full", plusJakartaSans.variable)}>
-      <GoogleTagManager gtmId="G-00XRYQ54TN" />
+      <GoogleAnalytics gaId="G-00XRYQ54TN" />
       <body className="max-w-2xl mx-auto bg-gray-50">
         <ReactQueryProvider>
           <ChatNavContextProvider>{children}</ChatNavContextProvider>
