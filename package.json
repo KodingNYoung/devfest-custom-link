@@ -10,6 +10,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@next/third-parties": "^16.0.3",
     "@tanstack/react-query": "^5.74.3",
     "@tanstack/react-query-devtools": "^5.74.3",
     "axios": "^1.8.4",
