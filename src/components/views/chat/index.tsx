@@ -1,11 +1,18 @@
+"use client";
+
 import { FC } from "@/utils/types";
 import ChatFooter from "./_components/ChatFooter";
 import ChatWall from "./_components/ChatWall";
 import { useChat } from "@/hooks/chat";
+import { useEffect } from "react";
 
 const Chat: FC = () => {
-  const { scrollRef, scrollToBottom } = useChat();
+  const { scrollRef, scrollToBottom, readChat } = useChat();
   scrollToBottom("instant", 0);
+
+  useEffect(() => {
+    readChat();
+  }, []);
 
   return (
     <div

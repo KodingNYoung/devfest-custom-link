@@ -53,7 +53,12 @@ const ConversationCard: FC<Props> = ({ conversation }) => {
               : conversation.latest_message.sender === MessageSenders.SATE
                 ? "Sate: "
                 : "Agent: "}{" "}
-            {conversation.latest_message.message}
+            <span
+              className="*:!font-normal"
+              dangerouslySetInnerHTML={{
+                __html: conversation.latest_message.message,
+              }}
+            />
           </span>
           <span className="flex-1" />
           {!conversation.read_by_customer && (
